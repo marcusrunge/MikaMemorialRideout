@@ -21,4 +21,10 @@
     <None Include="..\..\..\..\Downloads\SVG herunterladen\rideout-structure.svg" Link="wwwroot\assets\rideout-structure.svg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\assets\rideout-structure.svg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
