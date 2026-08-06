@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1800" viewBox="0 0 1080 1800">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.16"/>
+    </filter>
+
+    <style>
+      .title{font:700 42px 'Segoe UI', Arial, sans-serif;fill:#111827}
+      .subtitle{font:600 22px 'Segoe UI', Arial, sans-serif;fill:#475569}
+      .section{font:700 25px 'Segoe UI', Arial, sans-serif;fill:#111827}
+      .text{font:18px 'Segoe UI', Arial, sans-serif;fill:#334155}
+      .small{font:16px 'Segoe UI', Arial, sans-serif;fill:#475569}
+      .tiny{font:700 13px 'Segoe UI', Arial, sans-serif;fill:#ffffff;letter-spacing:.5px}
+      .rule{font:700 24px 'Segoe UI', Arial, sans-serif;fill:#ffffff;letter-spacing:.5px}
+      .label{font:700 15px 'Segoe UI', Arial, sans-serif;fill:#111827}
+      .card{filter:url(#shadow);stroke-width:2.5}
+      .lane{stroke:#94a3b8;stroke-width:5;stroke-dasharray:18 18;opacity:.75}
+      .arrowText{font:700 20px 'Segoe UI', Arial, sans-serif;fill:#475569}
+    </style>
+
+    <g id="sportbike">
+      <circle cx="18" cy="52" r="14" fill="#111827"/>
+      <circle cx="92" cy="52" r="14" fill="#111827"/>
+      <circle cx="18" cy="52" r="7" fill="#e5e7eb"/>
+      <circle cx="92" cy="52" r="7" fill="#e5e7eb"/>
+      <path d="M15 47 L35 25 L58 22 L78 30 L101 46 L92 56 L54 55 L37 46 Z" fill="currentColor"/>
+      <path d="M44 25 L65 10 L88 13 L100 28 L79 31 L58 22 Z" fill="currentColor" opacity="0.72"/>
+      <path d="M79 13 L91 2 L103 14 L91 16 Z" fill="#bae6fd" stroke="#0f172a" stroke-width="1"/>
+      <path d="M38 25 L29 13 L51 16 L55 23 Z" fill="#1f2937" opacity=".8"/>
+      <path d="M10 46 C28 36, 59 37, 99 46" fill="none" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+      <path d="M66 32 L75 51" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+      <path d="M42 34 L25 52" stroke="#111827" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <g id="policebike">
+      <use href="#sportbike" style="color:#2563eb"/>
+      <rect x="48" y="26" width="20" height="8" rx="2" fill="#ffffff"/>
+      <rect x="55" y="4" width="10" height="6" rx="2" fill="#ef4444"/>
+      <rect x="66" y="4" width="10" height="6" rx="2" fill="#3b82f6"/>
+    </g>
+
+    <g id="roadMarshalBike">
+      <use href="#sportbike" style="color:#16a34a"/>
+      <circle cx="72" cy="18" r="13" fill="#14532d" stroke="#ffffff" stroke-width="2"/>
+      <text x="72" y="23" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" fill="#ffffff">RM</text>
+      <path d="M42 21 L61 13" stroke="#facc15" stroke-width="4" stroke-linecap="round" opacity=".95"/>
+    </g>
+
+    <g id="marshalIcon">
+      <circle cx="0" cy="0" r="24" fill="#15803d"/>
+      <text x="0" y="7" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#ffffff">M</text>
+    </g>
+
+    <g id="headsetIcon" fill="none" stroke="#334155" stroke-width="5" stroke-linecap="round">
+      <path d="M0 28 A28 28 0 0 1 56 28"/>
+      <rect x="-4" y="28" width="12" height="26" rx="4" fill="#334155" stroke="none"/>
+      <rect x="48" y="28" width="12" height="26" rx="4" fill="#334155" stroke="none"/>
+      <path d="M56 42 C70 42 72 54 58 58"/>
+    </g>
+
+    <g id="handIcon" fill="none" stroke="#334155" stroke-width="5" stroke-linejoin="round" stroke-linecap="round">
+      <path d="M18 60 L18 18 C18 10 30 10 30 18 L30 43"/>
+      <path d="M30 43 L30 10 C30 2 42 2 42 10 L42 43"/>
+      <path d="M42 43 L42 15 C42 7 54 7 54 15 L54 47"/>
+      <path d="M54 47 L54 25 C54 17 66 18 66 27 L66 62 C66 82 52 94 36 94 C22 94 12 83 6 68 L0 52 C-3 42 9 39 14 47 L18 60"/>
+    </g>
+
+    <g id="staggerIcon">
+      <use href="#sportbike" transform="scale(.55)" style="color:#334155"/>
+      <use href="#sportbike" transform="translate(50 36) scale(.55)" style="color:#334155"/>
+    </g>
+
+    <g id="marshalBand">
+      <rect x="0" y="0" width="550" height="58" rx="18" fill="#ffffff" stroke="#16a34a" stroke-width="2.5" filter="url(#shadow)"/>
+      <line x1="34" y1="29" x2="516" y2="29" stroke="#bbf7d0" stroke-width="5" stroke-linecap="round"/>
+      <g transform="translate(64 3) scale(.56)"><use href="#roadMarshalBike"/></g>
+      <g transform="translate(366 3) scale(.56)"><use href="#roadMarshalBike"/></g>
+      <rect x="207" y="12" width="136" height="34" rx="17" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+      <text x="275" y="35" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="16" font-weight="700" fill="#14532d">Road Marshals</text>
+    </g>
+  </defs>
+
+  <rect width="1080" height="1800" fill="#f8fafc"/>
+  <rect x="35" y="28" width="1010" height="122" rx="24" fill="#ffffff" stroke="#cbd5e1" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="540" y="80" text-anchor="middle" class="title">Mika Memorial Rideout</text>
+  <text x="540" y="119" text-anchor="middle" class="subtitle">Struktur Übersicht</text>
+
+  <line x1="430" y1="1754" x2="430" y2="525" class="lane"/>
+  <g id="directionMarker" transform="translate(865 178)">
+    <line x1="0" y1="78" x2="0" y2="18" stroke="#64748b" stroke-width="8" stroke-linecap="round"/>
+    <polygon points="0,0 -24,44 24,44" fill="#64748b"/>
+    <text x="0" y="112" text-anchor="middle" class="arrowText">Fahrtrichtung</text>
+  </g>
+
+  <rect x="155" y="195" width="550" height="148" rx="22" fill="#fff7ed" stroke="#fb923c" class="card"/>
+  <text x="430" y="248" text-anchor="middle" class="section">Mika</text>
+  <text x="430" y="283" text-anchor="middle" class="text">UE-MT2007</text>
+  <g transform="translate(535 246) scale(1.08)" style="color:#f97316"><use href="#sportbike"/></g>
+  <rect x="155" y="372" width="550" height="128" rx="22" fill="#ffffff" stroke="#334155" class="card"/>
+  <text x="430" y="416" text-anchor="middle" class="section">Road Captain</text>
+  <text x="430" y="451" text-anchor="middle" class="text">UE-M874</text>
+  <g transform="translate(540 406) scale(1.05)" style="color:#111111"><use href="#sportbike"/></g>
+
+  <rect x="42" y="382" width="90" height="108" rx="16" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+  <g transform="translate(36 405) scale(.72)"><use href="#policebike"/></g>
+  <text x="87" y="476" text-anchor="middle" class="tiny" fill="#1d4ed8">POLIZEI</text>
+
+  <rect x="728" y="382" width="90" height="108" rx="16" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+  <g transform="translate(722 405) scale(.72)"><use href="#policebike"/></g>
+  <text x="773" y="476" text-anchor="middle" class="tiny" fill="#1d4ed8">POLIZEI</text>
+
+  <rect x="155" y="548" width="550" height="210" rx="22" fill="#cceeff" stroke="#0284c7" class="card"/>
+  <text x="190" y="595" class="section">Segment A - Familie &amp; Freunde</text>
+  <text x="190" y="633" class="text">Direkt dahinter</text>
+  <text x="190" y="663" class="text">Ruhig &amp; geschlossen</text>
+  <g transform="translate(410 658)" style="color:#0057b8"><use href="#sportbike"/></g>
+  <g transform="translate(535 658)" style="color:#00a651"><use href="#sportbike"/></g>
+  <g transform="translate(470 704)" style="color:#d62828"><use href="#sportbike"/></g>
+  <g transform="translate(595 704)" style="color:#ff6a00"><use href="#sportbike"/></g>
+
+  <g transform="translate(155 775)"><use href="#marshalBand"/></g>
+
+  <rect x="155" y="850" width="550" height="210" rx="22" fill="#d8f7db" stroke="#16a34a" class="card"/>
+  <text x="190" y="897" class="section">Segment B - Lokale Community</text>
+  <text x="190" y="935" class="text">Road Marshals &amp; Sweep Rider</text>
+  <text x="190" y="965" class="text">Unsere Leute</text>
+  <g transform="translate(420 977)" style="color:#00a651"><use href="#sportbike"/></g>
+  <g transform="translate(540 942)" style="--bike-main:#0057b8;--bike-accent:#93c5fd"><use href="#sportbike"/></g>
+  <g transform="translate(480 1018)" style="color:#ff6a00"><use href="#sportbike"/></g>
+
+  <rect x="42" y="902" width="90" height="112" rx="16" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5" filter="url(#shadow)"/>
+  <g transform="translate(36 925) scale(.72)"><use href="#policebike"/></g>
+  <text x="87" y="996" text-anchor="middle" class="tiny" fill="#1d4ed8">FLANKE</text>
+
+  <g transform="translate(155 1077)"><use href="#marshalBand"/></g>
+
+  <rect x="155" y="1152" width="550" height="210" rx="22" fill="#ffd8b5" stroke="#f97316" class="card"/>
+  <text x="190" y="1199" class="section">Segment C - Anreisende Gruppen</text>
+  <text x="190" y="1237" class="text">Gastgruppen</text>
+  <text x="190" y="1267" class="text">In Blöcken fahren</text>
+  <g transform="translate(420 1280)" style="color:#d62828"><use href="#sportbike"/></g>
+  <g transform="translate(540 1280)" style="color:#ff6a00"><use href="#sportbike"/></g>
+  <g transform="translate(480 1322)" style="color:#0057b8"><use href="#sportbike"/></g>
+
+  <g transform="translate(155 1379)"><use href="#marshalBand"/></g>
+
+  <rect x="155" y="1454" width="550" height="170" rx="22" fill="#fff7b2" stroke="#eab308" class="card"/>
+  <text x="190" y="1501" class="section">Segment D - Einzelfahrer</text>
+  <text x="190" y="1541" class="text">Am Ende mit Sweep</text>
+  <g transform="translate(455 1560)" style="color:#00a651"><use href="#sportbike"/></g>
+  <g transform="translate(585 1560)" style="color:#d62828"><use href="#sportbike"/></g>
+
+  <rect x="155" y="1660" width="550" height="94" rx="20" fill="#dbeafe" stroke="#2563eb" class="card"/>
+  <text x="430" y="1707" text-anchor="middle" class="section">Polizei hinten</text>
+  <text x="430" y="1736" text-anchor="middle" class="small">Schlusssicherung und Notfallzugang</text>
+  <g transform="translate(600 1686) scale(.68)"><use href="#policebike"/></g>
+
+  <rect x="745" y="548" width="300" height="650" rx="22" fill="#ffffff" stroke="#334155" stroke-width="2.5" filter="url(#shadow)"/>
+  <text x="895" y="598" text-anchor="middle" class="section">Kommunikation</text>
+  <g transform="translate(775 650) scale(.7)"><use href="#headsetIcon"/></g>
+  <text x="835" y="671" class="text">SENA Mesh</text>
+  <text x="835" y="700" class="small">Captain &amp; Marshals</text>
+  <line x1="775" y1="744" x2="1012" y2="744" stroke="#e2e8f0" stroke-width="2"/>
+  <g transform="translate(785 782) scale(.55)"><use href="#handIcon"/></g>
+  <text x="835" y="811" class="text">Handzeichen</text>
+  <text x="835" y="840" class="small">Probleme melden</text>
+  <line x1="775" y1="884" x2="1012" y2="884" stroke="#e2e8f0" stroke-width="2"/>
+  <g transform="translate(835 920) scale(1.08)"><use href="#staggerIcon"/></g>
+  <text x="895" y="1036" text-anchor="middle" class="text">Ruhig fahren</text>
+  <text x="895" y="1066" text-anchor="middle" class="small">Versetzt fahren</text>
+  <text x="895" y="1094" text-anchor="middle" class="small">Keine Lücken</text>
+
+  <g id="rulesPanel">
+    <rect x="745" y="1225" width="300" height="285" rx="22" fill="#ffffff" stroke="#334155" stroke-width="2.5" filter="url(#shadow)"/>
+    <text x="895" y="1275" text-anchor="middle" class="section">Grundregeln</text>
+
+    <rect x="770" y="1310" width="250" height="46" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="895" y="1340" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">KEINE LÜCKEN</text>
+
+    <rect x="770" y="1380" width="250" height="46" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="895" y="1410" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">KEIN ÜBERHOLEN</text>
+
+    <rect x="770" y="1450" width="250" height="46" rx="14" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+    <text x="895" y="1480" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700" fill="#111827">RM WEISUNG</text>
+  </g>
+
+</svg>
