@@ -4,12 +4,23 @@
 
 <header class="event-hero">
     <div class="content-container event-hero__content">
-        <p class="eyebrow">Gemeinsam erinnern</p>
+        <p class="eyebrow">Danke, dass ihr mich mitgenommen habt!</p>
         <h1>Mika Memorial Rideout</h1>
         <p class="event-hero__introduction">
             Gemeinsam fahren wir in Erinnerung an Mika. Auf dieser Seite findest du den aktuellen
             Planungsstand, Informationen zur Route, Hinweise zum Ablauf und die Anmeldung zum Rideout.
         </p>
+
+        <section class="participant-summary" aria-labelledby="participant-summary-heading">
+            <div>
+                <span class="participant-summary__label" id="participant-summary-heading">Aktuell angemeldet</span>
+                <strong class="participant-summary__count">@RegisteredPersonCount</strong>
+                <span class="participant-summary__unit">Personen</span>
+            </div>
+            <p>
+                Summe aus Einzelanmeldungen und allen Personen in angemeldeten Gruppen.
+            </p>
+        </section>
 
         <div class="event-facts" aria-label="Veranstaltungsinformationen">
             <article class="event-fact"><span>Datum</span><strong>Wird bekannt gegeben</strong></article>
@@ -30,7 +41,7 @@
                 <p>Die einzelnen Punkte werden aktualisiert, sobald neue und belastbare Informationen vorliegen.</p>
             </div>
 
-            <div class="overall-status">
+            <div class="overall-status overall-status--orange">
                 <span class="status-indicator status-indicator--orange" aria-hidden="true"></span>
                 <div><span class="status-label">Gesamtstatus</span><strong>Planung läuft</strong></div>
             </div>
@@ -38,7 +49,7 @@
             <div class="status-grid">
                 @foreach (var status in PlanningStatuses)
                 {
-                    <article class="status-card">
+                    <article class="@GetCardClass(status.Level)">
                         <div class="status-card__header">
                             <span class="@GetIndicatorClass(status.Level)" aria-hidden="true"></span>
                             <div>
@@ -154,6 +165,10 @@
 </footer>
 
 @code {
+    // Bis die REST-API angeschlossen ist, bleibt die öffentlich sichtbare Summe bewusst bei null.
+    // Später liefert die API ausschließlich die aggregierte Personenanzahl, niemals einzelne Anmeldedaten.
+    private const int RegisteredPersonCount = 0;
+
     private static readonly PlanningStatusItem[] PlanningStatuses =
     [
         new("Ordnungsamt", "Die Abstimmung wird vorbereitet.", PlanningStatusLevel.Orange),
@@ -167,6 +182,14 @@
         new("Park- und Aufstellfläche", "Die geeigneten Flächen werden derzeit abgestimmt.", PlanningStatusLevel.Orange),
         new("Wetter", "Eine belastbare Einschätzung ist erst kurz vor dem Rideout möglich.", PlanningStatusLevel.Unknown)
     ];
+
+    private static string GetCardClass(PlanningStatusLevel level) => level switch
+    {
+        PlanningStatusLevel.Green => "status-card status-card--green",
+        PlanningStatusLevel.Orange => "status-card status-card--orange",
+        PlanningStatusLevel.Red => "status-card status-card--red",
+        _ => "status-card status-card--unknown"
+    };
 
     private static string GetIndicatorClass(PlanningStatusLevel level) => level switch
     {
@@ -184,13 +207,7 @@
         _ => "Noch keine Information"
     };
 
-    private enum PlanningStatusLevel
-    {
-        Unknown,
-        Green,
-        Orange,
-        Red
-    }
+    private enum PlanningStatusLevel { Unknown, Green, Orange, Red }
 
     private sealed record PlanningStatusItem(string Title, string Description, PlanningStatusLevel Level);
 }
