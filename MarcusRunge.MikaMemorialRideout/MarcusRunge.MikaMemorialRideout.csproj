@@ -6,11 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Content Include="..\..\..\..\Downloads\staticwebapp.config.json" Link="wwwroot\staticwebapp.config.json" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="10.0.10" PrivateAssets="all" />
@@ -19,11 +15,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\assets\" />
     <Folder Include="wwwroot\Models\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\..\..\..\Downloads\SVG herunterladen\rideout-structure.svg" Link="wwwroot\assets\rideout-structure.svg" />
-  </ItemGroup>
+  </ItemGroup>  
 
   <ItemGroup>
     <Content Update="wwwroot\assets\rideout-structure.svg">
