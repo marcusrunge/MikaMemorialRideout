@@ -1,32 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MarcusRunge.MikaMemorialRideout</title>
+    <meta name="description" content="Informationen und Anmeldung zum Mika Memorial Rideout." />
+    <meta name="theme-color" content="#111827" />
+
+    <title>Mika Memorial Rideout</title>
+
     <base href="/" />
     <link rel="preload" id="webassembly" />
     <link rel="stylesheet" href="css/app.css" />
-    <!-- If you add any scoped CSS files, uncomment the following to load them
-    <link href="MarcusRunge.MikaMemorialRideout.styles.css" rel="stylesheet" /> -->
     <script type="importmap"></script>
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="application-loading" role="status" aria-live="polite">
+            <svg class="loading-progress" aria-hidden="true">
+                <circle r="40%" cx="50%" cy="50%"></circle>
+                <circle r="40%" cx="50%" cy="50%"></circle>
+            </svg>
+
+            <div class="loading-progress-text"></div>
+            <span class="application-loading__label">Rideout-Informationen werden geladen</span>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="." class="reload">Reload</a>
-        <span class="dismiss">🗙</span>
+        Die Seite konnte nicht ordnungsgemäß ausgeführt werden.
+        <a href="." class="reload">Neu laden</a>
+        <button class="dismiss" type="button" aria-label="Fehlermeldung schließen">×</button>
     </div>
+
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
 </body>
 

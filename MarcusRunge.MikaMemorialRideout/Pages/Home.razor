@@ -1,7 +1,196 @@
-﻿@page "/"
+@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Mika Memorial Rideout</PageTitle>
 
-<h1>Hello, world!</h1>
+<header class="event-hero">
+    <div class="content-container event-hero__content">
+        <p class="eyebrow">Gemeinsam erinnern</p>
+        <h1>Mika Memorial Rideout</h1>
+        <p class="event-hero__introduction">
+            Gemeinsam fahren wir in Erinnerung an Mika. Auf dieser Seite findest du den aktuellen
+            Planungsstand, Informationen zur Route, Hinweise zum Ablauf und die Anmeldung zum Rideout.
+        </p>
 
-Welcome to your new app.
+        <div class="event-facts" aria-label="Veranstaltungsinformationen">
+            <article class="event-fact"><span>Datum</span><strong>Wird bekannt gegeben</strong></article>
+            <article class="event-fact"><span>Beginn</span><strong>Wird bekannt gegeben</strong></article>
+            <article class="event-fact"><span>Treffpunkt</span><strong>Wird bekannt gegeben</strong></article>
+        </div>
+
+        <a class="primary-button" href="#anmeldung">Zur Anmeldung</a>
+    </div>
+</header>
+
+<main>
+    <section class="page-section" id="planungsstand" aria-labelledby="planning-heading">
+        <div class="content-container">
+            <div class="section-heading">
+                <p class="eyebrow">Aktuelle Lage</p>
+                <h2 id="planning-heading">Stand der Rideout-Planung</h2>
+                <p>Die einzelnen Punkte werden aktualisiert, sobald neue und belastbare Informationen vorliegen.</p>
+            </div>
+
+            <div class="overall-status">
+                <span class="status-indicator status-indicator--orange" aria-hidden="true"></span>
+                <div><span class="status-label">Gesamtstatus</span><strong>Planung läuft</strong></div>
+            </div>
+
+            <div class="status-grid">
+                @foreach (var status in PlanningStatuses)
+                {
+                    <article class="status-card">
+                        <div class="status-card__header">
+                            <span class="@GetIndicatorClass(status.Level)" aria-hidden="true"></span>
+                            <div>
+                                <h3>@status.Title</h3>
+                                <span class="status-text">@GetLevelText(status.Level)</span>
+                            </div>
+                        </div>
+                        <p>@status.Description</p>
+                    </article>
+                }
+            </div>
+
+            <p class="status-updated">Letzte Aktualisierung: Noch nicht veröffentlicht</p>
+        </div>
+    </section>
+
+    <section class="page-section page-section--accent" id="anmeldung" aria-labelledby="registration-heading">
+        <div class="content-container">
+            <div class="section-heading">
+                <p class="eyebrow">Teilnahme</p>
+                <h2 id="registration-heading">Zum Rideout anmelden</h2>
+                <p>
+                    Die Anmeldung wird für Einzelpersonen und Gruppen möglich sein. Erfasst werden nur
+                    Herkunft, Personenanzahl und die notwendigen Kontaktdaten.
+                </p>
+            </div>
+
+            <div class="registration-grid">
+                <article class="registration-card">
+                    <span class="card-category">Einzelanmeldung</span>
+                    <h3>Ich melde mich selbst an</h3>
+                    <ul>
+                        <li>Name</li>
+                        <li>E-Mail-Adresse</li>
+                        <li>Herkunftsort</li>
+                        <li>Personenanzahl</li>
+                    </ul>
+                    <button class="secondary-button" type="button" disabled>Formular wird vorbereitet</button>
+                </article>
+
+                <article class="registration-card">
+                    <span class="card-category">Gruppenanmeldung</span>
+                    <h3>Ich melde eine Gruppe an</h3>
+                    <ul>
+                        <li>Gruppenname</li>
+                        <li>Ansprechpartner</li>
+                        <li>E-Mail-Adresse</li>
+                        <li>Herkunftsort oder Region</li>
+                        <li>Personenanzahl</li>
+                    </ul>
+                    <button class="secondary-button" type="button" disabled>Formular wird vorbereitet</button>
+                </article>
+            </div>
+
+            <div class="information-notice" role="note">
+                <strong>Die Online-Anmeldung ist noch nicht freigeschaltet.</strong>
+                <span>Sie wird aktiviert, sobald die sichere Speicherung und der Dublettenschutz eingerichtet und getestet sind.</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section" id="route" aria-labelledby="route-heading">
+        <div class="content-container">
+            <div class="section-heading">
+                <p class="eyebrow">Strecke</p>
+                <h2 id="route-heading">Route des Rideouts</h2>
+                <p>Die endgültige Strecke wird veröffentlicht, sobald die erforderlichen Abstimmungen abgeschlossen sind.</p>
+            </div>
+
+            <div class="route-placeholder">
+                <div class="route-placeholder__symbol" aria-hidden="true">⌖</div>
+                <div>
+                    <h3>Routenkarte folgt</h3>
+                    <p>Startpunkt, Strecke und wichtige Hinweise werden hier rechtzeitig vor dem Rideout angezeigt.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="page-section page-section--muted" id="struktur" aria-labelledby="structure-heading">
+        <div class="content-container">
+            <div class="section-heading">
+                <p class="eyebrow">Gemeinsamer Ablauf</p>
+                <h2 id="structure-heading">Struktur des Rideouts</h2>
+                <p>
+                    Die Übersicht zeigt die geplante Reihenfolge, die einzelnen Segmente und die
+                    grundlegenden Regeln während der gemeinsamen Fahrt.
+                </p>
+            </div>
+
+            <figure class="structure-figure">
+                <a href="assets/rideout-structure.svg" target="_blank" rel="noopener noreferrer">
+                    <img src="assets/rideout-structure.svg"
+                         alt="Struktur des Mika Memorial Rideouts mit Segmenten, Road Marshals, Polizei und Grundregeln" />
+                </a>
+                <figcaption>Tippe oder klicke auf die Grafik, um sie in voller Größe zu öffnen.</figcaption>
+            </figure>
+        </div>
+    </section>
+</main>
+
+<footer class="page-footer">
+    <div class="content-container page-footer__content">
+        <div>
+            <strong>Mika Memorial Rideout</strong>
+            <p>Gemeinsam erinnern. Gemeinsam fahren.</p>
+        </div>
+        <div class="page-footer__links">
+            <span>Datenschutz folgt</span>
+            <span>Kontakt folgt</span>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private static readonly PlanningStatusItem[] PlanningStatuses =
+    [
+        new("Ordnungsamt", "Die Abstimmung wird vorbereitet.", PlanningStatusLevel.Orange),
+        new("Straßenverkehrsamt", "Die verkehrsrechtliche Abstimmung wird vorbereitet.", PlanningStatusLevel.Orange),
+        new("Polizei", "Die Abstimmung mit der Polizei wird vorbereitet.", PlanningStatusLevel.Orange),
+        new("Organisation", "Die organisatorischen Vorbereitungen laufen.", PlanningStatusLevel.Orange),
+        new("Route", "Die endgültige Strecke wird derzeit abgestimmt.", PlanningStatusLevel.Orange),
+        new("Treffpunkt", "Treffpunkt und Aufstellung werden noch festgelegt.", PlanningStatusLevel.Orange),
+        new("Road Marshals", "Einteilung und Kommunikation werden vorbereitet.", PlanningStatusLevel.Orange),
+        new("Sanitäts- und Notfallplanung", "Die notwendigen Abläufe werden vorbereitet.", PlanningStatusLevel.Orange),
+        new("Park- und Aufstellfläche", "Die geeigneten Flächen werden derzeit abgestimmt.", PlanningStatusLevel.Orange),
+        new("Wetter", "Eine belastbare Einschätzung ist erst kurz vor dem Rideout möglich.", PlanningStatusLevel.Unknown)
+    ];
+
+    private static string GetIndicatorClass(PlanningStatusLevel level) => level switch
+    {
+        PlanningStatusLevel.Green => "status-indicator status-indicator--green",
+        PlanningStatusLevel.Orange => "status-indicator status-indicator--orange",
+        PlanningStatusLevel.Red => "status-indicator status-indicator--red",
+        _ => "status-indicator status-indicator--unknown"
+    };
+
+    private static string GetLevelText(PlanningStatusLevel level) => level switch
+    {
+        PlanningStatusLevel.Green => "Bestätigt",
+        PlanningStatusLevel.Orange => "In Abstimmung",
+        PlanningStatusLevel.Red => "Aktion erforderlich",
+        _ => "Noch keine Information"
+    };
+
+    private enum PlanningStatusLevel
+    {
+        Unknown,
+        Green,
+        Orange,
+        Red
+    }
+
+    private sealed record PlanningStatusItem(string Title, string Description, PlanningStatusLevel Level);
+}
