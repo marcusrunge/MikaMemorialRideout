@@ -1,0 +1,19 @@
+# Local Azure Functions configuration and secrets
+local.settings.json
+
+# Local development overrides
+local.settings.*.json
+!local.settings.example.json
+
+# User Secrets
+secrets.json
+
+# Local Azurite data, if it is ever placed inside this project
+.azurite/
+__azurite__/
+__blobstorage__/
+__queuestorage__/
+__tablestorage__/
+AzuriteConfig
+AzuriteConfig.json
+azurite-debug.log

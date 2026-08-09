@@ -1,6 +1,8 @@
 <Solution>
   <Folder Name="/Projektmappenelemente/">
     <File Path=".github/workflows/azure-static-web-apps-orange-field-0302d2c10.yml" />
+    <File Path=".gitignore" />
   </Folder>
+  <Project Path="MarcusRunge.MikaMemorialRideout.Api/MarcusRunge.MikaMemorialRideout.Api.csproj" />
   <Project Path="MarcusRunge.MikaMemorialRideout/MarcusRunge.MikaMemorialRideout.csproj" />
 </Solution>
