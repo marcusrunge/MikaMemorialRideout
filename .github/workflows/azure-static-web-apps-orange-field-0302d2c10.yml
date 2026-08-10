@@ -40,8 +40,8 @@ jobs:
         id: idtoken
         with:
           script: |
-            const core = require('@actions/core')
-            return await core.getIDToken()
+            const coredemo = require('@actions/core')
+            return await coredemo.getIDToken()
           result-encoding: string
 
       - name: Build and deploy
@@ -74,8 +74,8 @@ jobs:
         id: idtoken
         with:
           script: |
-            const core = require('@actions/core')
-            return await core.getIDToken()
+            const coredemo = require('@actions/core')
+            return await coredemo.getIDToken()
           result-encoding: string
 
       - name: Close Pull Request
