@@ -6,6 +6,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="wwwroot\Models\**" />
+    <Content Remove="wwwroot\Models\**" />
+    <EmbeddedResource Remove="wwwroot\Models\**" />
+    <None Remove="wwwroot\Models\**" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" />
@@ -14,7 +21,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\" />
-    <Folder Include="wwwroot\Models\" />
   </ItemGroup>  
 
   <ItemGroup>

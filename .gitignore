@@ -361,3 +361,10 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Temporary local API configuration files
+Api-local.settings.json
+*-local.settings.json
+
+# Local secrets or copied authorization codes
+LOCAL-ADMIN-CODE.txt
