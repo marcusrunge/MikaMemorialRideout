@@ -1,3 +1,12 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@using MarcusRunge.MikaMemorialRideout.Components
 
-@Body
+<div class="public-shell">
+    <PublicNavigation />
+
+    <div class="public-shell__content">
+        @Body
+    </div>
+
+    <PublicFooter />
+</div>

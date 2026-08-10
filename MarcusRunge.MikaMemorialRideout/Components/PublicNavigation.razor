@@ -1,0 +1,58 @@
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+<header class="top-navigation">
+    <div class="content-container top-navigation__inner top-navigation__inner--without-brand">
+        <nav class="top-navigation__desktop" aria-label="Hauptnavigation">
+            <NavLink href="" Match="NavLinkMatch.All">Start</NavLink>
+            <NavLink href="aktuelles">Aktuelles</NavLink>
+            <NavLink href="route">Route</NavLink>
+            <NavLink href="struktur">Struktur</NavLink>
+            <a class="top-navigation__registration" href="/#anmeldung">Anmelden</a>
+        </nav>
+
+        <button class="top-navigation__toggle"
+                type="button"
+                aria-label="Menü öffnen oder schließen"
+                aria-expanded="@_isOpen"
+                aria-controls="mobile-navigation"
+                @onclick="ToggleMenu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+    </div>
+
+    <button class="top-navigation__backdrop @(_isOpen ? "top-navigation__backdrop--open" : null)"
+            type="button"
+            aria-label="Menü schließen"
+            tabindex="-1"
+            @onclick="CloseMenu"></button>
+
+    <nav id="mobile-navigation"
+         class="top-navigation__mobile @(_isOpen ? "top-navigation__mobile--open" : null)"
+         aria-label="Mobile Hauptnavigation">
+        <div class="top-navigation__mobile-heading">
+            <strong>Navigation</strong>
+            <button type="button" aria-label="Menü schließen" @onclick="CloseMenu">×</button>
+        </div>
+
+        <NavLink href="" Match="NavLinkMatch.All" @onclick="CloseMenu">Start</NavLink>
+        <NavLink href="aktuelles" @onclick="CloseMenu">Aktuelles</NavLink>
+        <NavLink href="route" @onclick="CloseMenu">Route</NavLink>
+        <NavLink href="struktur" @onclick="CloseMenu">Struktur</NavLink>
+        <a class="top-navigation__mobile-registration" href="/#anmeldung" @onclick="CloseMenu">Anmelden</a>
+    </nav>
+</header>
+
+@code {
+    private bool _isOpen;
+
+    protected override void OnInitialized() => NavigationManager.LocationChanged += HandleLocationChanged;
+
+    private void ToggleMenu() => _isOpen = !_isOpen;
+    private void CloseMenu() => _isOpen = false;
+    private void HandleLocationChanged(object? sender, LocationChangedEventArgs args) => _isOpen = false;
+
+    public void Dispose() => NavigationManager.LocationChanged -= HandleLocationChanged;
+}
