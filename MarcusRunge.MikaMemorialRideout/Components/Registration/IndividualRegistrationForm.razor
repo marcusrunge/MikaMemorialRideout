@@ -1,0 +1,107 @@
+@inject IRideoutApiClient ApiClient
+
+<EditForm Model="_input" OnValidSubmit="SubmitAsync" class="registration-form">
+    <DataAnnotationsValidator />
+
+    <div class="form-field">
+        <label for="individual-name">Name</label>
+        <InputText id="individual-name" @bind-Value="_input.Name" autocomplete="name" />
+        <ValidationMessage For="() => _input.Name" />
+    </div>
+
+    <div class="form-field">
+        <label for="individual-email">E-Mail-Adresse</label>
+        <InputText id="individual-email" @bind-Value="_input.Email" autocomplete="email" inputmode="email" />
+        <ValidationMessage For="() => _input.Email" />
+    </div>
+
+    <div class="form-row">
+        <div class="form-field">
+            <label for="individual-origin">Herkunftsort</label>
+            <InputText id="individual-origin" @bind-Value="_input.Origin" autocomplete="address-level2" />
+            <ValidationMessage For="() => _input.Origin" />
+        </div>
+
+        <div class="form-field">
+            <label for="individual-count">Personenanzahl</label>
+            <InputNumber id="individual-count" @bind-Value="_input.PersonCount" min="1" max="500" />
+            <ValidationMessage For="() => _input.PersonCount" />
+        </div>
+    </div>
+
+    <div class="form-field">
+        <label for="individual-message">Nachricht <span>optional</span></label>
+        <InputTextArea id="individual-message" @bind-Value="_input.Message" rows="4" />
+        <ValidationMessage For="() => _input.Message" />
+    </div>
+
+    <div class="honeypot" aria-hidden="true">
+        <label for="individual-website">Website</label>
+        <InputText id="individual-website" @bind-Value="_input.Website" tabindex="-1" autocomplete="off" />
+    </div>
+
+    <div class="form-checkbox">
+        <InputCheckbox id="individual-privacy" @bind-Value="_input.PrivacyAccepted" />
+        <label for="individual-privacy">Ich stimme der Speicherung meiner Angaben zur Organisation des Rideouts zu.</label>
+    </div>
+    <ValidationMessage For="() => _input.PrivacyAccepted" />
+
+    <button class="secondary-button" type="submit" disabled="@_isSubmitting">
+        @(_isSubmitting ? "Anmeldung wird gespeichert" : "Verbindlich anmelden")
+    </button>
+
+    @if (!string.IsNullOrWhiteSpace(_message))
+    {
+        <p class="@_messageClass" role="status">@_message</p>
+    }
+</EditForm>
+
+@code {
+    [Parameter]
+    public EventCallback RegistrationCreated { get; set; }
+
+    private IndividualRegistrationInput _input = new();
+    private bool _isSubmitting;
+    private string? _message;
+    private string _messageClass = "form-result";
+
+    private async Task SubmitAsync()
+    {
+        _isSubmitting = true;
+        _message = null;
+
+        try
+        {
+            var request = new CreateRegistrationRequest
+            {
+                RegistrationType = "individual",
+                Name = _input.Name,
+                Email = _input.Email,
+                Origin = _input.Origin,
+                PersonCount = _input.PersonCount,
+                Message = _input.Message,
+                PrivacyAccepted = _input.PrivacyAccepted,
+                Website = _input.Website
+            };
+
+            var result = await ApiClient.CreateRegistrationAsync(request, CancellationToken.None);
+            _message = result.Message;
+            _messageClass = result.Status == "created" ? "form-result form-result--success" : "form-result form-result--warning";
+
+            if (result.Status == "created")
+            {
+                _input = new IndividualRegistrationInput();
+                await RegistrationCreated.InvokeAsync();
+            }
+        }
+        catch (Exception)
+        {
+            _message = "Die Anmeldung konnte gerade nicht gespeichert werden. Bitte versuche es später erneut.";
+            _messageClass = "form-result form-result--error";
+        }
+        finally
+        {
+            _isSubmitting = false;
+        }
+    }
+}

@@ -1,0 +1,173 @@
+@page "/admin/status"
+@inject IRideoutApiClient ApiClient
+@implements IDisposable
+
+<PageTitle>Statusverwaltung | Mika Memorial Rideout</PageTitle>
+
+<main class="admin-page">
+    <div class="content-container">
+        <header class="admin-header">
+            <p class="eyebrow">Interne Verwaltung</p>
+            <h1>Planungsstatus bearbeiten</h1>
+            <p>
+                Änderungen erscheinen nach dem Speichern auf der öffentlichen Rideout-Seite.
+                Anmeldedaten werden in diesem Bereich weder gelesen noch verändert.
+            </p>
+        </header>
+
+        <section class="admin-auth" aria-labelledby="admin-code-heading">
+            <div>
+                <h2 id="admin-code-heading">Autorisierungscode</h2>
+                <p>Der Code wird nur für die jeweilige Statusänderung an die API übertragen und nicht im Browser gespeichert.</p>
+            </div>
+
+            <div class="form-field">
+                <label for="admin-code">Geheimer Code</label>
+                <input id="admin-code"
+                       type="password"
+                       value="@_adminCode"
+                       @oninput="UpdateAdminCode"
+                       autocomplete="off"
+                       spellcheck="false" />
+            </div>
+        </section>
+
+        @if (_isLoading)
+        {
+            <p class="admin-loading" role="status">Statusinformationen werden geladen.</p>
+        }
+        else if (!string.IsNullOrWhiteSpace(_pageMessage))
+        {
+            <p class="form-result form-result--error" role="alert">@_pageMessage</p>
+        }
+        else
+        {
+            <div class="admin-status-list">
+                @foreach (var item in _items)
+                {
+                    <EditForm Model="item" OnValidSubmit="() => SaveAsync(item)" class="admin-status-card">
+                        <DataAnnotationsValidator />
+
+                        <div class="admin-status-card__heading">
+                            <span class="@GetIndicatorClass(item.Level)" aria-hidden="true"></span>
+                            <div>
+                                <h2>@item.Title</h2>
+                                <span>@item.Key</span>
+                            </div>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="@($"level-{item.Key}")">Ampelstatus</label>
+                            <InputSelect id="@($"level-{item.Key}")" @bind-Value="item.Level">
+                                <option value="Unknown">Grau, noch keine Information</option>
+                                <option value="Green">Grün, bestätigt</option>
+                                <option value="Orange">Orange, in Abstimmung</option>
+                                <option value="Red">Rot, Aktion erforderlich</option>
+                            </InputSelect>
+                        </div>
+
+                        <div class="form-field">
+                            <label for="@($"summary-{item.Key}")">Kurztext</label>
+                            <InputText id="@($"summary-{item.Key}")" @bind-Value="item.Summary" />
+                            <ValidationMessage For="() => item.Summary" />
+                        </div>
+
+                        <div class="form-field">
+                            <label for="@($"details-{item.Key}")">Details <span>optional</span></label>
+                            <InputTextArea id="@($"details-{item.Key}")" @bind-Value="item.Details" rows="3" />
+                            <ValidationMessage For="() => item.Details" />
+                        </div>
+
+                        <div class="admin-status-card__footer">
+                            <span class="admin-updated">@GetUpdatedText(item.UpdatedAtUtc)</span>
+                            <button class="secondary-button" type="submit" disabled="@(item.IsSaving || string.IsNullOrWhiteSpace(_adminCode))">
+                                @(item.IsSaving ? "Wird gespeichert" : "Status speichern")
+                            </button>
+                        </div>
+
+                        @if (!string.IsNullOrWhiteSpace(item.ResultMessage))
+                        {
+                            <p class="@item.ResultClass" role="status">@item.ResultMessage</p>
+                        }
+                    </EditForm>
+                }
+            </div>
+        }
+    </div>
+</main>
+
+@code {
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private List<PlanningStatusEditorItem> _items = [];
+    private string _adminCode = string.Empty;
+    private string? _pageMessage;
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var response = await ApiClient.GetPlanningStatusAsync(_cancellationTokenSource.Token);
+            _items = response.Items.Select(PlanningStatusEditorItem.FromResponse).ToList();
+        }
+        catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested)
+        {
+            _pageMessage = "Die Statusinformationen konnten nicht geladen werden.";
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private void UpdateAdminCode(ChangeEventArgs args) => _adminCode = args.Value?.ToString() ?? string.Empty;
+
+    private async Task SaveAsync(PlanningStatusEditorItem item)
+    {
+        item.IsSaving = true;
+        item.ResultMessage = null;
+
+        try
+        {
+            var request = new UpdatePlanningStatusRequest
+            {
+                Level = item.Level,
+                Summary = item.Summary,
+                Details = item.Details
+            };
+
+            var response = await ApiClient.UpdatePlanningStatusAsync(item.Key, request, _adminCode, _cancellationTokenSource.Token);
+            item.ResultMessage = response.Message;
+            item.ResultClass = response.Status == "updated" ? "admin-result admin-result--success" : "admin-result admin-result--error";
+
+            if (response.Item is not null)
+            {
+                item.Level = response.Item.Level;
+                item.Summary = response.Item.Summary;
+                item.Details = response.Item.Details;
+                item.UpdatedAtUtc = response.Item.UpdatedAtUtc;
+            }
+        }
+        catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested)
+        {
+            item.ResultMessage = "Der Status konnte gerade nicht gespeichert werden.";
+            item.ResultClass = "admin-result admin-result--error";
+        }
+        finally
+        {
+            item.IsSaving = false;
+        }
+    }
+
+    private static string GetIndicatorClass(PlanningStatusLevel level) => $"status-indicator status-indicator--{level.ToString().ToLowerInvariant()}";
+
+    private static string GetUpdatedText(DateTimeOffset? updatedAtUtc) => updatedAtUtc.HasValue
+        ? $"Aktualisiert am {updatedAtUtc.Value.ToLocalTime():dd.MM.yyyy, HH:mm} Uhr"
+        : "Noch nicht gespeichert";
+
+    public void Dispose()
+    {
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+    }
+}
