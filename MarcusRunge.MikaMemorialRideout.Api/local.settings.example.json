@@ -3,6 +3,8 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
-    "RideoutStorageConnection": "UseDevelopmentStorage=true"
+    "RideoutStorageConnection": "UseDevelopmentStorage=true",
+    "RideoutAdminCodeSalt": "<BASE64_SALT_EINTRAGEN>",
+    "RideoutAdminCodeHash": "<BASE64_HASH_EINTRAGEN>"
   }
 }
