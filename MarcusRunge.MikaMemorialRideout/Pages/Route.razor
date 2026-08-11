@@ -2,20 +2,74 @@
 
 <PageTitle>Route | Mika Memorial Rideout</PageTitle>
 
-<main class="subpage">
+<main class="subpage route-page">
     <div class="content-container">
         <header class="subpage__header">
             <p class="eyebrow">Strecke</p>
             <h1>Route des Rideouts</h1>
-            <p>Die endgültige Strecke wird veröffentlicht, sobald die erforderlichen Abstimmungen abgeschlossen sind.</p>
+            <p>Treffpunkt und Wegpunkte stehen fest. Der endgültige Straßenverlauf wird vor der Veröffentlichung noch geprüft.</p>
         </header>
 
-        <div class="route-placeholder">
-            <div class="route-placeholder__symbol" aria-hidden="true">⌖</div>
+        <section class="route-event-card" aria-labelledby="route-event-heading">
             <div>
-                <h2>Routenkarte folgt</h2>
-                <p>Startpunkt, Strecke und wichtige Hinweise werden hier rechtzeitig vor dem Rideout angezeigt.</p>
+                <span>Sonntag, 23. August 2026</span>
+                <h2 id="route-event-heading">Albrecht-Thaer-Gelände</h2>
+                <p>Albrecht-Thaer-Straße, 29525 Uelzen</p>
             </div>
-        </div>
+            <strong>Beginn 13:00 Uhr</strong>
+        </section>
+
+        <section class="route-map-section" aria-labelledby="route-map-heading">
+            <div class="route-map-section__heading">
+                <div><p class="eyebrow">OpenStreetMap</p><h2 id="route-map-heading">Treffpunkt und Streckengebiet</h2></div>
+                <a class="route-external-link" href="@GoogleMapsRoute" target="_blank" rel="noopener noreferrer">Originalroute in Google Maps öffnen</a>
+            </div>
+
+            <div class="route-map" aria-label="Interaktive Karte des Streckengebiets">
+                <Map loadParameters="@_loadParameters" height="32rem" width="100%" />
+            </div>
+
+            <p class="route-map-note">Die Karte wird mit OpenStreetMap dargestellt. Die nummerierten Wegpunkte sind unten dokumentiert. Eine geprüfte Streckenlinie und ein GPX-Download folgen nach Abschluss der Routenabstimmung.</p>
+        </section>
+
+        <section class="route-waypoints" aria-labelledby="route-waypoints-heading">
+            <div class="section-heading"><p class="eyebrow">Fahrreihenfolge</p><h2 id="route-waypoints-heading">Geplante Wegpunkte</h2></div>
+            <ol>
+                @foreach (var waypoint in Waypoints)
+                {
+                    <li><span>@waypoint.Sequence</span><div><strong>@waypoint.Name</strong>@if (!string.IsNullOrWhiteSpace(waypoint.Note)) { <small>@waypoint.Note</small> }</div></li>
+                }
+            </ol>
+        </section>
     </div>
 </main>
+
+@code {
+    private const string GoogleMapsRoute = "https://maps.app.goo.gl/4j4qVtasPcwnxdjx7";
+
+    private readonly LoadParameters _loadParameters = new()
+    {
+        location = new Location { latitude = 52.9593381, longitude = 10.5464655 },
+        zoomLevel = 12,
+        mapControls = new MapControls
+        {
+            layerList = new LayerList { position = Position.topRight },
+            scaleBar = new ScaleBar { position = Position.bottomRight, unitOfScaleBar = UnitOfScaleBar.metric }
+        }
+    };
+
+    private static readonly Waypoint[] Waypoints =
+    [
+        new(1, "Albrecht-Thaer-Gelände", "Start und Ziel"),
+        new(2, "Elektro-Fundgrube", "Lüneburger Straße 82"),
+        new(3, "Zur Wipperau", null),
+        new(4, "Wegpunkt nordöstlich von Uelzen", null),
+        new(5, "Pieperhöfen 2A", null),
+        new(6, "Hochgraefestraße 2", null),
+        new(7, "Celler Straße", null),
+        new(8, "K8 südwestlich von Uelzen", null),
+        new(9, "Albrecht-Thaer-Gelände", "Rückkehr zum Ausgangspunkt")
+    ];
+
+    private sealed record Waypoint(int Sequence, string Name, string? Note);
+}

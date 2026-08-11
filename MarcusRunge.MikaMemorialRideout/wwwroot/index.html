@@ -5,37 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Informationen und Anmeldung zum Mika Memorial Rideout." />
     <meta name="theme-color" content="#111827" />
+
     <title>Mika Memorial Rideout</title>
     <base href="/" />
+
     <link rel="preload" id="webassembly" />
     <link rel="stylesheet" href="css/app.css" />
+    <link rel="stylesheet" href="MarcusRunge.MikaMemorialRideout.styles.css" />
+    <link rel="icon" type="image/png" href="icon-192.png" />
+
     <style>
-        html, body { margin: 0; min-width: 320px; min-height: 100%; background: #f8fafc; }
-        #app:empty { display: none; }
-        .application-loading { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; background: #f8fafc; color: #172033; font-family: "Segoe UI", Arial, sans-serif; }
-        .application-loading__content { display: flex; align-items: center; flex-direction: column; gap: 18px; text-align: center; }
-        .application-loading__spinner { width: 48px; height: 48px; border: 5px solid #d8e0ea; border-top-color: #f97316; border-radius: 50%; animation: application-loading-spin 800ms linear infinite; }
-        .application-loading__label { margin: 0; font-size: 16px; font-weight: 700; }
-        #blazor-error-ui { display: none; }
-        @keyframes application-loading-spin { to { transform: rotate(360deg); } }
-        @media (prefers-reduced-motion: reduce) { .application-loading__spinner { animation-duration: 1600ms; } }
+        html,
+        body {
+            min-width: 320px;
+            min-height: 100%;
+            margin: 0;
+            background: #f8fafc;
+        }
+
+        #app:empty {
+            display: none;
+        }
+
+        .application-loading {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #f8fafc;
+            color: #172033;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .application-loading__content {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            gap: 18px;
+            text-align: center;
+        }
+
+        .application-loading__spinner {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #d8e0ea;
+            border-top-color: #f97316;
+            border-radius: 50%;
+            animation: application-loading-spin 800ms linear infinite;
+        }
+
+        .application-loading__label {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        #blazor-error-ui {
+            display: none;
+        }
+
+        @keyframes application-loading-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .application-loading__spinner {
+                animation-duration: 1600ms;
+            }
+        }
     </style>
+
     <script type="importmap"></script>
 </head>
 <body>
     <div id="app">
-        <div class="application-loading" role="status" aria-live="polite" aria-label="Rideout-Informationen werden geladen">
+        <div class="application-loading"
+             role="status"
+             aria-live="polite"
+             aria-label="Rideout-Informationen werden geladen">
             <div class="application-loading__content">
                 <div class="application-loading__spinner" aria-hidden="true"></div>
                 <p class="application-loading__label">Rideout-Informationen werden geladen</p>
             </div>
         </div>
     </div>
+
     <div id="blazor-error-ui">
         Die Seite konnte nicht ordnungsgemäß ausgeführt werden.
         <a href="." class="reload">Neu laden</a>
         <button class="dismiss" type="button" aria-label="Fehlermeldung schließen">×</button>
     </div>
+
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
 </body>
 </html>

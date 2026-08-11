@@ -1,0 +1,57 @@
+{
+  "type": "FeatureCollection",
+  "name": "Mika Memorial Rideout - Wegpunkte",
+  "properties": {
+    "eventDate": "2026-08-23",
+    "eventTime": "13:00",
+    "source": "Vom Veranstalter bereitgestellter Google-Maps-Routenlink",
+    "note": "Enthaelt nur die Wegpunkte. Der exakte Strassenverlauf muss mit einem Routingdienst oder einer GPX/KML-Route erzeugt werden."
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "sequence": 1, "role": "start", "name": "Albrecht-Thaer-Gelaende", "address": "Albrecht-Thaer-Strasse, 29525 Uelzen" },
+      "geometry": { "type": "Point", "coordinates": [10.5469518, 52.9660785] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 2, "role": "waypoint", "name": "Elektro-Fundgrube", "address": "Lueneburger Strasse 82, 29525 Uelzen" },
+      "geometry": { "type": "Point", "coordinates": [10.5600803, 52.9716882] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 3, "role": "waypoint", "name": "Zur Wipperau", "address": "29525 Uelzen" },
+      "geometry": { "type": "Point", "coordinates": [10.6054018, 53.0030067] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 4, "role": "waypoint", "name": "Wegpunkt 4" },
+      "geometry": { "type": "Point", "coordinates": [10.619666, 52.9819037] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 5, "role": "waypoint", "name": "Pieperhoefen 2A" },
+      "geometry": { "type": "Point", "coordinates": [10.584848840701314, 52.94856097401077] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 6, "role": "waypoint", "name": "Hochgraefestrasse 2" },
+      "geometry": { "type": "Point", "coordinates": [10.5739326, 52.9610085] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 7, "role": "waypoint", "name": "Celler Strasse" },
+      "geometry": { "type": "Point", "coordinates": [10.5412308, 52.9451582] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 8, "role": "waypoint", "name": "K8" },
+      "geometry": { "type": "Point", "coordinates": [10.4909769, 52.9293702] }
+    },
+    {
+      "type": "Feature",
+      "properties": { "sequence": 9, "role": "finish", "name": "Albrecht-Thaer-Gelaende", "address": "Albrecht-Thaer-Strasse, 29525 Uelzen" },
+      "geometry": { "type": "Point", "coordinates": [10.5469518, 52.9660785] }
+    }
+  ]
+}
