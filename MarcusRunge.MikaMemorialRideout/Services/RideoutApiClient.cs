@@ -6,6 +6,8 @@ namespace MarcusRunge.MikaMemorialRideout.Services;
 
 public sealed class RideoutApiClient : IRideoutApiClient
 {
+    private const string AdminCodeHeader = "X-Admin-Code";
+    private const string ManagementApiBasePath = "api/rideout-management";
     private readonly HttpClient _httpClient;
 
     public RideoutApiClient(HttpClient httpClient)
@@ -39,20 +41,67 @@ public sealed class RideoutApiClient : IRideoutApiClient
         string adminCode,
         CancellationToken cancellationToken)
     {
-        using var message = new HttpRequestMessage(HttpMethod.Put, $"api/planning-status/{Uri.EscapeDataString(key)}")
-        {
-            Content = JsonContent.Create(request)
-        };
-
-        message.Headers.Add("X-Admin-Code", adminCode);
-
+        using var message = CreateAdminRequest(HttpMethod.Put, $"api/planning-status/{Uri.EscapeDataString(key)}", adminCode, JsonContent.Create(request));
         using var response = await _httpClient.SendAsync(message, cancellationToken);
-        var result = await response.Content.ReadFromJsonAsync<UpdatePlanningStatusResponse>(cancellationToken)
-            ?? new UpdatePlanningStatusResponse("error", "Die Antwort der Statusänderung konnte nicht gelesen werden.");
+        return await ReadResponseAsync(response, new UpdatePlanningStatusResponse("error", "Die Antwort der Statusänderung konnte nicht gelesen werden."), cancellationToken);
+    }
 
-        if (response.IsSuccessStatusCode || response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.NotFound)
+    public async Task<AdminVerificationResponse> VerifyAdminCodeAsync(string adminCode, CancellationToken cancellationToken)
+    {
+        using var message = CreateAdminRequest(HttpMethod.Post, $"{ManagementApiBasePath}/verify", adminCode);
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+        return await ReadResponseAsync(response, new AdminVerificationResponse("error", "Die Autorisierungsantwort konnte nicht gelesen werden."), cancellationToken);
+    }
+
+    public async Task<AdminRegistrationsResponse> GetAdminRegistrationsAsync(string adminCode, CancellationToken cancellationToken)
+    {
+        using var message = CreateAdminRequest(HttpMethod.Get, $"{ManagementApiBasePath}/registrations", adminCode);
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+
+        if (!response.IsSuccessStatusCode)
+            throw new HttpRequestException("Die Anmeldungen konnten nicht geladen werden.", null, response.StatusCode);
+
+        return await response.Content.ReadFromJsonAsync<AdminRegistrationsResponse>(cancellationToken)
+            ?? throw new InvalidOperationException("Die Anmeldungen konnten nicht gelesen werden.");
+    }
+
+    public async Task<AdminRegistrationMutationResponse> UpdateAdminRegistrationAsync(
+        string id,
+        AdminRegistrationUpdateRequest request,
+        string adminCode,
+        CancellationToken cancellationToken)
+    {
+        using var message = CreateAdminRequest(HttpMethod.Put, $"{ManagementApiBasePath}/registrations/{Uri.EscapeDataString(id)}", adminCode, JsonContent.Create(request));
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+        return await ReadResponseAsync(response, new AdminRegistrationMutationResponse("error", "Die Antwort konnte nicht gelesen werden."), cancellationToken);
+    }
+
+    public async Task<AdminRegistrationMutationResponse> DeleteAdminRegistrationAsync(
+        string id,
+        string version,
+        string adminCode,
+        CancellationToken cancellationToken)
+    {
+        var uri = $"{ManagementApiBasePath}/registrations/{Uri.EscapeDataString(id)}?version={Uri.EscapeDataString(version)}";
+        using var message = CreateAdminRequest(HttpMethod.Delete, uri, adminCode);
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+        return await ReadResponseAsync(response, new AdminRegistrationMutationResponse("error", "Die Antwort konnte nicht gelesen werden."), cancellationToken);
+    }
+
+    private static HttpRequestMessage CreateAdminRequest(HttpMethod method, string uri, string adminCode, HttpContent? content = null)
+    {
+        var message = new HttpRequestMessage(method, uri) { Content = content };
+        message.Headers.Add(AdminCodeHeader, adminCode);
+        return message;
+    }
+
+    private static async Task<T> ReadResponseAsync<T>(HttpResponseMessage response, T fallback, CancellationToken cancellationToken)
+    {
+        var result = await response.Content.ReadFromJsonAsync<T>(cancellationToken) ?? fallback;
+
+        if (response.IsSuccessStatusCode || response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized or HttpStatusCode.NotFound or HttpStatusCode.Conflict)
             return result;
 
-        throw new HttpRequestException(result.Message, null, response.StatusCode);
+        throw new HttpRequestException("Die API-Anfrage ist fehlgeschlagen.", null, response.StatusCode);
     }
 }

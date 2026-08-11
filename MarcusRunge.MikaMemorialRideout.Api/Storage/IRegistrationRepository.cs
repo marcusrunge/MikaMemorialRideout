@@ -5,6 +5,9 @@ namespace MarcusRunge.MikaMemorialRideout.Api.Storage;
 internal interface IRegistrationRepository
 {
     Task<RegistrationCreateResult> CreateAsync(CreateRegistrationRequest request, CancellationToken cancellationToken);
-
     Task<PublicSummaryResponse> GetPublicSummaryAsync(CancellationToken cancellationToken);
+    Task<AdminRegistrationsResponse> GetAdminRegistrationsAsync(CancellationToken cancellationToken);
+    Task<AdminRegistrationResponse?> GetAdminRegistrationAsync(string id, CancellationToken cancellationToken);
+    Task<AdminRegistrationUpdateResult> UpdateAdminRegistrationAsync(string id, AdminRegistrationUpdateRequest request, CancellationToken cancellationToken);
+    Task<AdminRegistrationDeleteResult> DeleteAdminRegistrationAsync(string id, string version, CancellationToken cancellationToken);
 }

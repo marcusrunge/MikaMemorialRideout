@@ -1,0 +1,175 @@
+@page "/admin"
+@page "/admin/status"
+@layout AdminLayout
+@inject IRideoutApiClient ApiClient
+@implements IDisposable
+
+<PageTitle>Interne Verwaltung | Mika Memorial Rideout</PageTitle>
+
+<main class="admin-page admin-page--modern">
+    <div class="content-container">
+        <header class="admin-header admin-header--compact">
+            <p class="eyebrow">Interne Verwaltung</p>
+            <h1>Rideout verwalten</h1>
+            <p>Personenbezogene Anmeldedaten werden erst nach erfolgreicher serverseitiger Prüfung des Admincodes geladen.</p>
+        </header>
+
+        @if (!_isAuthorized)
+        {
+            <section class="admin-login" aria-labelledby="admin-login-heading">
+                <div>
+                    <h2 id="admin-login-heading">Verwaltung freischalten</h2>
+                    <p>Der Code wird nicht im Browser gespeichert und muss nach einem Neuladen erneut eingegeben werden.</p>
+                </div>
+                <div class="form-field">
+                    <label for="admin-code">Admincode</label>
+                    <input id="admin-code" type="password" @bind="_adminCode" autocomplete="off" spellcheck="false" @onkeydown="HandleLoginKeyAsync" />
+                </div>
+                <button class="admin-button admin-button--primary" type="button" disabled="@(_isVerifying || string.IsNullOrWhiteSpace(_adminCode))" @onclick="AuthorizeAsync">
+                    @(_isVerifying ? "Wird geprüft" : "Verwaltung öffnen")
+                </button>
+                @if (!string.IsNullOrWhiteSpace(_loginMessage))
+                {
+                    <p class="form-result form-result--error" role="alert">@_loginMessage</p>
+                }
+            </section>
+        }
+        else
+        {
+            <nav class="admin-tabs" aria-label="Verwaltungsbereiche">
+                <button type="button" class="@GetTabClass(AdminTab.Status)" @onclick="() => _activeTab = AdminTab.Status">Planungsstatus</button>
+                <button type="button" class="@GetTabClass(AdminTab.Registrations)" @onclick="() => _activeTab = AdminTab.Registrations">
+                    Anmeldungen <span>@_registrations.Count</span>
+                </button>
+            </nav>
+
+            @if (_activeTab == AdminTab.Status)
+            {
+                <section aria-labelledby="status-admin-heading">
+                    <div class="admin-section-heading"><div><p class="eyebrow">Öffentliche Informationen</p><h2 id="status-admin-heading">Planungsstatus</h2></div></div>
+                    <div class="admin-status-list">
+                        @foreach (var item in _statusItems)
+                        {
+                            <EditForm Model="item" OnValidSubmit="() => SaveStatusAsync(item)" class="admin-status-card">
+                                <DataAnnotationsValidator />
+                                <div class="admin-status-card__heading"><span class="@GetIndicatorClass(item.Level)" aria-hidden="true"></span><div><h3>@item.Title</h3><span>@item.Key</span></div></div>
+                                <div class="form-field"><label for="@($"level-{item.Key}")">Ampelstatus</label><InputSelect id="@($"level-{item.Key}")" @bind-Value="item.Level"><option value="Unknown">Grau, noch keine Information</option><option value="Green">Grün, bestätigt</option><option value="Orange">Orange, in Abstimmung</option><option value="Red">Rot, Aktion erforderlich</option></InputSelect></div>
+                                <div class="form-field"><label for="@($"summary-{item.Key}")">Kurztext</label><InputText id="@($"summary-{item.Key}")" @bind-Value="item.Summary" /><ValidationMessage For="() => item.Summary" /></div>
+                                <div class="form-field"><label for="@($"details-{item.Key}")">Details <span>optional</span></label><InputTextArea id="@($"details-{item.Key}")" @bind-Value="item.Details" rows="3" /><ValidationMessage For="() => item.Details" /></div>
+                                <div class="admin-status-card__footer"><span class="admin-updated">@GetUpdatedText(item.UpdatedAtUtc)</span><button class="admin-button admin-button--primary" type="submit" disabled="@item.IsSaving">@(item.IsSaving ? "Wird gespeichert" : "Status speichern")</button></div>
+                                @if (!string.IsNullOrWhiteSpace(item.ResultMessage)) { <p class="@item.ResultClass" role="status">@item.ResultMessage</p> }
+                            </EditForm>
+                        }
+                    </div>
+                </section>
+            }
+            else
+            {
+                <section aria-labelledby="registration-admin-heading">
+                    <div class="admin-section-heading">
+                        <div><p class="eyebrow">Personenbezogene Daten</p><h2 id="registration-admin-heading">Anmeldungen</h2></div>
+                        <button class="admin-button admin-button--secondary" type="button" @onclick="LoadRegistrationsAsync">Neu laden</button>
+                    </div>
+
+                    <div class="admin-metrics"><article><span>Anmeldungen</span><strong>@_registrations.Count</strong></article><article><span>Personen</span><strong>@_registrations.Sum(item => item.PersonCount)</strong></article></div>
+
+                    <div class="admin-filters">
+                        <div class="form-field"><label for="registration-search">Suchen</label><input id="registration-search" type="search" @bind="_searchText" @bind:event="oninput" placeholder="Name, E-Mail, Gruppe oder Herkunft" /></div>
+                        <div class="form-field"><label for="registration-type">Anmeldeart</label><select id="registration-type" @bind="_registrationTypeFilter"><option value="all">Alle</option><option value="individual">Einzelanmeldungen</option><option value="group">Gruppenanmeldungen</option></select></div>
+                    </div>
+
+                    @if (_isLoadingRegistrations)
+                    {
+                        <p class="admin-loading" role="status">Anmeldungen werden geladen.</p>
+                    }
+                    else if (!FilteredRegistrations.Any())
+                    {
+                        <p class="admin-empty">Keine passenden Anmeldungen gefunden.</p>
+                    }
+                    else
+                    {
+                        <div class="registration-table-shell">
+                            <div class="registration-table registration-table--header" aria-hidden="true">
+                                <span>Art</span><span>Name oder Gruppe</span><span>Kontakt</span><span>Herkunft</span><span>Personen</span><span>Datum</span><span>Aktion</span>
+                            </div>
+
+                            @foreach (var item in FilteredRegistrations)
+                            {
+                                <article class="registration-list-item">
+                                    <div class="registration-table registration-table--row">
+                                        <span><span class="registration-type-badge">@GetRegistrationTypeShortText(item.RegistrationType)</span></span>
+                                        <span class="registration-primary"><strong>@GetRegistrationHeading(item)</strong><small>@(item.RegistrationType == "group" ? item.Name : item.Message)</small></span>
+                                        <span class="registration-contact"><a href="@($"mailto:{item.Email}")">@item.Email</a></span>
+                                        <span>@item.Origin</span>
+                                        <span class="registration-count">@item.PersonCount</span>
+                                        <span>@item.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yy, HH:mm")</span>
+                                        <span><button class="admin-button admin-button--icon" type="button" aria-expanded="@item.IsExpanded" @onclick="() => ToggleRegistration(item)">@(item.IsExpanded ? "Schließen" : "Bearbeiten")</button></span>
+                                    </div>
+
+                                    @if (item.IsExpanded)
+                                    {
+                                        <EditForm Model="item" OnValidSubmit="() => SaveRegistrationAsync(item)" class="registration-editor">
+                                            <DataAnnotationsValidator />
+                                            <div class="registration-editor__grid">
+                                                <div class="form-field"><label>Anmeldeart</label><InputSelect @bind-Value="item.RegistrationType"><option value="individual">Einzel</option><option value="group">Gruppe</option></InputSelect></div>
+                                                <div class="form-field"><label>Name</label><InputText @bind-Value="item.Name" /><ValidationMessage For="() => item.Name" /></div>
+                                                @if (item.RegistrationType == "group") { <div class="form-field"><label>Gruppenname</label><InputText @bind-Value="item.GroupName" /><ValidationMessage For="() => item.GroupName" /></div> }
+                                                <div class="form-field"><label>E-Mail</label><InputText @bind-Value="item.Email" /><ValidationMessage For="() => item.Email" /></div>
+                                                <div class="form-field"><label>Herkunft</label><InputText @bind-Value="item.Origin" /><ValidationMessage For="() => item.Origin" /></div>
+                                                <div class="form-field"><label>Personenanzahl</label><InputNumber @bind-Value="item.PersonCount" min="1" max="500" /><ValidationMessage For="() => item.PersonCount" /></div>
+                                                <div class="form-field registration-editor__message"><label>Nachricht</label><InputTextArea @bind-Value="item.Message" rows="3" /><ValidationMessage For="() => item.Message" /></div>
+                                            </div>
+                                            <footer class="registration-editor__actions">
+                                                <button class="admin-button admin-button--primary" type="submit" disabled="@item.IsSaving">@(item.IsSaving ? "Wird gespeichert" : "Speichern")</button>
+                                                @if (!item.DeleteConfirmationVisible) { <button class="admin-button admin-button--danger-ghost" type="button" @onclick="() => item.DeleteConfirmationVisible = true">Anmeldung löschen</button> }
+                                                else { <div class="admin-delete-confirmation"><strong>Wirklich endgültig löschen?</strong><button class="admin-button admin-button--danger" type="button" disabled="@item.IsDeleting" @onclick="() => DeleteRegistrationAsync(item)">@(item.IsDeleting ? "Wird gelöscht" : "Ja, löschen")</button><button class="admin-button admin-button--secondary" type="button" @onclick="() => item.DeleteConfirmationVisible = false">Abbrechen</button></div> }
+                                            </footer>
+                                            @if (!string.IsNullOrWhiteSpace(item.ResultMessage)) { <p class="@item.ResultClass" role="status">@item.ResultMessage</p> }
+                                        </EditForm>
+                                    }
+                                </article>
+                            }
+                        </div>
+                    }
+                </section>
+            }
+        }
+    </div>
+</main>
+
+@code {
+    private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private readonly List<PlanningStatusEditorItem> _statusItems = [];
+    private readonly List<AdminRegistrationEditorItem> _registrations = [];
+    private string _adminCode = string.Empty;
+    private string _searchText = string.Empty;
+    private string _registrationTypeFilter = "all";
+    private string? _loginMessage;
+    private bool _isAuthorized;
+    private bool _isVerifying;
+    private bool _isLoadingRegistrations;
+    private AdminTab _activeTab = AdminTab.Registrations;
+
+    private IEnumerable<AdminRegistrationEditorItem> FilteredRegistrations => _registrations.Where(item => _registrationTypeFilter == "all" || item.RegistrationType == _registrationTypeFilter).Where(item => string.IsNullOrWhiteSpace(_searchText) || MatchesSearch(item, _searchText)).OrderByDescending(item => item.CreatedAtUtc);
+
+    private async Task HandleLoginKeyAsync(KeyboardEventArgs args) { if (args.Key == "Enter" && !_isVerifying && !string.IsNullOrWhiteSpace(_adminCode)) await AuthorizeAsync(); }
+    private async Task AuthorizeAsync() { _isVerifying = true; _loginMessage = null; try { var response = await ApiClient.VerifyAdminCodeAsync(_adminCode, _cancellationTokenSource.Token); _isAuthorized = response.Status == "authorized"; if (!_isAuthorized) { _loginMessage = response.Message; return; } await Task.WhenAll(LoadStatusesAsync(), LoadRegistrationsAsync()); } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { _loginMessage = "Die Verwaltung konnte gerade nicht freigeschaltet werden."; } finally { _isVerifying = false; } }
+    private async Task LoadStatusesAsync() { var response = await ApiClient.GetPlanningStatusAsync(_cancellationTokenSource.Token); _statusItems.Clear(); _statusItems.AddRange(response.Items.Select(PlanningStatusEditorItem.FromResponse)); }
+    private async Task LoadRegistrationsAsync() { _isLoadingRegistrations = true; try { var response = await ApiClient.GetAdminRegistrationsAsync(_adminCode, _cancellationTokenSource.Token); _registrations.Clear(); _registrations.AddRange(response.Items.Select(AdminRegistrationEditorItem.FromResponse)); } finally { _isLoadingRegistrations = false; } }
+    private static void ToggleRegistration(AdminRegistrationEditorItem item) { item.IsExpanded = !item.IsExpanded; item.DeleteConfirmationVisible = false; item.ResultMessage = null; }
+
+    private async Task SaveStatusAsync(PlanningStatusEditorItem item) { item.IsSaving = true; item.ResultMessage = null; try { var request = new UpdatePlanningStatusRequest { Level = item.Level, Summary = item.Summary, Details = item.Details }; var response = await ApiClient.UpdatePlanningStatusAsync(item.Key, request, _adminCode, _cancellationTokenSource.Token); item.ResultMessage = response.Message; item.ResultClass = response.Status == "updated" ? "admin-result admin-result--success" : "admin-result admin-result--error"; if (response.Item is not null) { item.Level = response.Item.Level; item.Summary = response.Item.Summary; item.Details = response.Item.Details; item.UpdatedAtUtc = response.Item.UpdatedAtUtc; } } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { item.ResultMessage = "Der Status konnte gerade nicht gespeichert werden."; item.ResultClass = "admin-result admin-result--error"; } finally { item.IsSaving = false; } }
+
+    private async Task SaveRegistrationAsync(AdminRegistrationEditorItem item) { item.IsSaving = true; item.ResultMessage = null; try { var request = new AdminRegistrationUpdateRequest { Version = item.Version, RegistrationType = item.RegistrationType, Name = item.Name, GroupName = item.GroupName, Email = item.Email, Origin = item.Origin, PersonCount = item.PersonCount, Message = item.Message }; var response = await ApiClient.UpdateAdminRegistrationAsync(item.Id, request, _adminCode, _cancellationTokenSource.Token); item.ResultMessage = response.Message; item.ResultClass = response.Status == "updated" ? "admin-result admin-result--success" : "admin-result admin-result--error"; if (response.Item is not null) item.Apply(response.Item); } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { item.ResultMessage = "Die Anmeldung konnte gerade nicht gespeichert werden."; item.ResultClass = "admin-result admin-result--error"; } finally { item.IsSaving = false; } }
+
+    private async Task DeleteRegistrationAsync(AdminRegistrationEditorItem item) { item.IsDeleting = true; try { var response = await ApiClient.DeleteAdminRegistrationAsync(item.Id, item.Version, _adminCode, _cancellationTokenSource.Token); if (response.Status == "deleted") _registrations.Remove(item); else { item.ResultMessage = response.Message; item.ResultClass = "admin-result admin-result--error"; item.DeleteConfirmationVisible = false; } } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { item.ResultMessage = "Die Anmeldung konnte gerade nicht gelöscht werden."; item.ResultClass = "admin-result admin-result--error"; item.DeleteConfirmationVisible = false; } finally { item.IsDeleting = false; } }
+
+    private string GetTabClass(AdminTab tab) => _activeTab == tab ? "admin-tab admin-tab--active" : "admin-tab";
+    private static string GetIndicatorClass(PlanningStatusLevel level) => $"status-indicator status-indicator--{level.ToString().ToLowerInvariant()}";
+    private static string GetUpdatedText(DateTimeOffset? value) => value.HasValue ? $"Aktualisiert am {value.Value.ToLocalTime():dd.MM.yyyy, HH:mm} Uhr" : "Noch nicht gespeichert";
+    private static string GetRegistrationTypeShortText(string value) => value == "group" ? "Gruppe" : "Einzel";
+    private static string GetRegistrationHeading(AdminRegistrationEditorItem item) => item.RegistrationType == "group" && !string.IsNullOrWhiteSpace(item.GroupName) ? item.GroupName : item.Name;
+    private static bool MatchesSearch(AdminRegistrationEditorItem item, string searchText) { var value = searchText.Trim(); return item.Name.Contains(value, StringComparison.OrdinalIgnoreCase) || item.Email.Contains(value, StringComparison.OrdinalIgnoreCase) || item.Origin.Contains(value, StringComparison.OrdinalIgnoreCase) || (item.GroupName?.Contains(value, StringComparison.OrdinalIgnoreCase) ?? false); }
+    public void Dispose() { _cancellationTokenSource.Cancel(); _cancellationTokenSource.Dispose(); }
+    private enum AdminTab { Status, Registrations }
+}
