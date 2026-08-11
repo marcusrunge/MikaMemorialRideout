@@ -1,4 +1,4 @@
-﻿.page-footer {
+.page-footer {
     padding-block: 2.75rem;
     background: #111827;
     color: #ffffff;
@@ -6,37 +6,16 @@
 
 .page-footer__content {
     display: grid;
-    min-height: 9rem;
-    align-items: center;
-    gap: 2.5rem;
-    grid-template-columns: minmax(13rem, 1fr) minmax(18rem, 1.2fr) minmax(10rem, 0.7fr);
+    align-items: stretch;
+    gap: 1.25rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.page-footer__identity {
+.page-footer__card {
     display: flex;
-    min-height: 7.5rem;
+    min-height: 8.5rem;
     justify-content: center;
-    flex-direction: column;
-}
-
-    .page-footer__identity strong {
-        display: block;
-        margin: 0;
-        font-size: 1.1rem;
-        line-height: 1.4;
-    }
-
-    .page-footer__identity p {
-        margin: 0.4rem 0 0;
-        color: #cbd5e1;
-        line-height: 1.5;
-    }
-
-.page-footer__legal-support {
-    display: flex;
-    min-height: 7.5rem;
-    justify-content: center;
-    padding: 1.1rem 1.25rem;
+    padding: 1.15rem 1.25rem;
     border: 1px solid rgba(253, 186, 116, 0.28);
     border-left: 0.25rem solid #f97316;
     border-radius: 0.75rem;
@@ -44,86 +23,75 @@
     flex-direction: column;
 }
 
-    .page-footer__legal-support span {
-        display: block;
-        margin: 0 0 0.35rem;
-        color: #fdba74;
-        font-size: 0.74rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        line-height: 1.4;
-        text-transform: uppercase;
-    }
-
-    .page-footer__legal-support a {
-        width: fit-content;
-        color: #ffffff;
-        font-size: 1.05rem;
-        font-weight: 750;
-        line-height: 1.45;
-        text-decoration-color: rgba(255, 255, 255, 0.45);
-        text-underline-offset: 0.22rem;
-    }
-
-        .page-footer__legal-support a:hover,
-        .page-footer__legal-support a:focus-visible {
-            color: #fdba74;
-        }
-
-    .page-footer__legal-support small {
-        display: block;
-        margin-top: 0.3rem;
-        color: #e2e8f0;
-        font-size: 1rem;
-        font-weight: 650;
-        line-height: 1.4;
-    }
-
-.page-footer__links {
-    display: flex;
-    min-height: 7.5rem;
-    align-items: flex-start;
-    justify-content: center;
-    flex-direction: column;
-    gap: 0.7rem;
+.page-footer__label {
+    display: block;
+    margin: 0 0 0.35rem;
+    color: #fdba74;
+    font-size: 0.74rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+    text-transform: uppercase;
 }
 
-    .page-footer__links a {
-        color: #e2e8f0;
-        font-size: 1rem;
-        font-weight: 650;
-        line-height: 1.45;
-        text-decoration-color: rgba(226, 232, 240, 0.4);
-        text-underline-offset: 0.22rem;
-    }
+.page-footer__identity strong {
+    display: block;
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
 
-        .page-footer__links a:hover,
-        .page-footer__links a.active,
-        .page-footer__links a:focus-visible {
-            color: #ffffff;
-        }
+.page-footer__identity p {
+    margin: 0.4rem 0 0;
+    color: #cbd5e1;
+    line-height: 1.5;
+}
+
+.page-footer__legal-support a,
+.page-footer__links a {
+    width: fit-content;
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.45;
+    text-decoration-color: rgba(255, 255, 255, 0.45);
+    text-underline-offset: 0.22rem;
+}
+
+.page-footer__legal-support a {
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+.page-footer__legal-support a:hover,
+.page-footer__legal-support a:focus-visible,
+.page-footer__links a:hover,
+.page-footer__links a.active,
+.page-footer__links a:focus-visible {
+    color: #fdba74;
+}
+
+.page-footer__location {
+    display: block;
+    margin-top: 0.35rem;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    font-weight: 650;
+    line-height: 1.4;
+}
+
+.page-footer__links {
+    gap: 0.45rem;
+}
 
 @media (max-width: 60rem) {
     .page-footer__content {
-        min-height: auto;
-        gap: 1.5rem 2rem;
-        grid-template-columns: minmax(13rem, 0.9fr) minmax(17rem, 1.1fr);
+        grid-template-columns: 1fr;
     }
 
-    .page-footer__identity,
-    .page-footer__legal-support {
-        min-height: 8rem;
-    }
-
-    .page-footer__links {
+    .page-footer__card {
         min-height: auto;
-        align-items: center;
-        justify-content: flex-start;
-        padding-top: 0.5rem;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 0.75rem 1.5rem;
-        grid-column: 1 / -1;
     }
 }
 
@@ -133,76 +101,10 @@
     }
 
     .page-footer__content {
-        align-items: stretch;
-        gap: 1.5rem;
-        grid-template-columns: 1fr;
+        gap: 1rem;
     }
 
-    .page-footer__identity,
-    .page-footer__legal-support,
-    .page-footer__links {
-        min-height: auto;
-        grid-column: auto;
-    }
-
-    .page-footer__identity {
-        padding-block: 0.25rem;
-    }
-
-    .page-footer__legal-support {
-        padding: 1.1rem 1.2rem;
-    }
-
-    .page-footer__links {
-        align-items: flex-start;
-        justify-content: flex-start;
-        padding-top: 0.25rem;
-    }
-    .page-footer__legal-support {
-        display: flex;
-        min-height: 7.5rem;
-        justify-content: center;
-        padding: 1.1rem 1.25rem;
-        border: 1px solid rgba(253, 186, 116, 0.28);
-        border-left: 0.25rem solid #f97316;
-        border-radius: 0.75rem;
-        background: rgba(255, 255, 255, 0.055);
-        flex-direction: column;
-    }
-
-    .page-footer__legal-label {
-        display: block;
-        margin-bottom: 0.3rem;
-        color: #fdba74;
-        font-size: 0.74rem;
-        font-weight: 800;
-        letter-spacing: 0.08em;
-        line-height: 1.4;
-        text-transform: uppercase;
-    }
-
-    .page-footer__legal-support a {
-        display: block;
-        width: fit-content;
-        color: #ffffff;
-        font-size: 1.05rem;
-        font-weight: 750;
-        line-height: 1.45;
-        text-decoration-color: rgba(255, 255, 255, 0.45);
-        text-underline-offset: 0.22rem;
-    }
-
-        .page-footer__legal-support a:hover,
-        .page-footer__legal-support a:focus-visible {
-            color: #fdba74;
-        }
-
-    .page-footer__location {
-        display: block;
-        margin-top: 0.45rem;
-        color: #e2e8f0;
-        font-size: 1.15rem;
-        font-weight: 700;
-        line-height: 1.4;
+    .page-footer__card {
+        padding: 1.05rem 1.1rem;
     }
 }
