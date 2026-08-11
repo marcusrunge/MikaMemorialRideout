@@ -1,0 +1,8 @@
+.top-navigation { z-index: 2000; }
+.top-navigation__backdrop { z-index: 2010; background: rgba(15, 23, 42, 0.75) !important; }
+.top-navigation__mobile { z-index: 2020; overflow-y: auto; background: #ffffff !important; background-color: #ffffff !important; color: #172033 !important; opacity: 1 !important; isolation: isolate; }
+.top-navigation__mobile::before { position: absolute; inset: 0; z-index: -1; background: #ffffff; content: ""; }
+.top-navigation__mobile-heading, .top-navigation__mobile > a { color: #172033 !important; }
+.top-navigation__mobile > a { background-color: #ffffff; }
+.top-navigation__mobile > a:hover, .top-navigation__mobile > a.active { background-color: #f1f5f9 !important; color: #172033 !important; }
+.top-navigation__mobile .top-navigation__mobile-registration { background-color: #f97316 !important; color: #ffffff !important; }
