@@ -20,7 +20,7 @@
         <section class="route-map-section" aria-labelledby="route-map-heading">
             <div class="route-map-section__heading">
                 <div><p class="eyebrow">OpenStreetMap</p><h2 id="route-map-heading">Geplanter Straßenverlauf</h2></div>
-                <a class="route-external-link" href="https://maps.app.goo.gl/GorEcopWw8F5x7S16" target="_blank" rel="noopener noreferrer">Originalroute in Google Maps öffnen</a>
+                <a class="route-external-link" href="https://maps.app.goo.gl/4j4qVtasPcwnxdjx7" target="_blank" rel="noopener noreferrer">Originalroute in Google Maps öffnen</a>
             </div>
             <div id="rideout-route-map" class="route-map" aria-label="Interaktive Karte der geplanten Rideout-Route"></div>
             @if (!string.IsNullOrWhiteSpace(_mapMessage))
@@ -33,9 +33,12 @@
         <section class="route-description" aria-labelledby="route-description-heading">
             <div class="section-heading"><p class="eyebrow">Streckenbeschreibung</p><h2 id="route-description-heading">Der Rideout in zehn Abschnitten</h2></div>
             <ol>
-                @foreach (var section in RouteSections)
+                @foreach (var routeSection in RouteSections)
                 {
-                    <li><span>@section.Sequence</span><p>@section.Description</p></li>
+                    <li>
+                        <span>@routeSection.Sequence</span>
+                        <p>@routeSection.Description</p>
+                    </li>
                 }
             </ol>
             <p class="route-description__notice">Kurzfristige Änderungen aufgrund von Baustellen, Straßensperrungen, Verkehrsmaßnahmen, Witterung oder behördlichen Vorgaben bleiben möglich.</p>
