@@ -1,13 +1,22 @@
 ﻿{
     "type":  "FeatureCollection",
-    "name":  "Mika Memorial Rideout - Route als Acht",
+    "name":  "Mika Memorial Rideout - Route als Acht mit Brueckenumleitung",
     "properties":  {
                        "source":  "OSRM auf Basis von OpenStreetMap-Daten mit lokaler Geometriekorrektur",
-                       "generatedAtUtc":  "2026-08-11T18:22:09.0752316+00:00",
+                       "generatedAtUtc":  "2026-08-12T09:33:54.0188576+00:00",
                        "distanceMeters":  46999,
                        "durationSeconds":  3133,
                        "reviewRequired":  true,
                        "routeShape":  "figure-eight",
+                       "bridgeDetour":  {
+                                            "reason":  "gesperrte Bruecke",
+                                            "via":  [
+                                                        "Sternstrasse",
+                                                        "Nothmannstrasse",
+                                                        "Ebstorfer Strasse",
+                                                        "Johnsburg"
+                                                    ]
+                                        },
                        "geometryCorrection":  {
                                                   "name":  "L270 Esterholzer Strasse",
                                                   "method":  "replace-osrm-detour",
@@ -32,9 +41,24 @@
                                                  "latitude":  52.9660785
                                              },
                                              {
-                                                 "name":  "Elektro-Fundgrube",
-                                                 "longitude":  10.5600803,
-                                                 "latitude":  52.9716882
+                                                 "name":  "Sternstrasse",
+                                                 "longitude":  10.550506,
+                                                 "latitude":  52.968769
+                                             },
+                                             {
+                                                 "name":  "Nothmannstrasse",
+                                                 "longitude":  10.547772,
+                                                 "latitude":  52.970795
+                                             },
+                                             {
+                                                 "name":  "Ebstorfer Strasse",
+                                                 "longitude":  10.552916,
+                                                 "latitude":  52.974253
+                                             },
+                                             {
+                                                 "name":  "Johnsburg",
+                                                 "longitude":  10.559836,
+                                                 "latitude":  52.971626
                                              },
                                              {
                                                  "name":  "Zur Wipperau",
@@ -161,6 +185,10 @@
                                                                   52.96876
                                                               ],
                                                               [
+                                                                  10.550501,
+                                                                  52.968768
+                                                              ],
+                                                              [
                                                                   10.550387,
                                                                   52.969002
                                                               ],
@@ -187,6 +215,10 @@
                                                               [
                                                                   10.547748,
                                                                   52.97079
+                                                              ],
+                                                              [
+                                                                  10.547753,
+                                                                  52.970799
                                                               ],
                                                               [
                                                                   10.547998,
@@ -243,6 +275,10 @@
                                                               [
                                                                   10.552592,
                                                                   52.974318
+                                                              ],
+                                                              [
+                                                                  10.552919,
+                                                                  52.974259
                                                               ],
                                                               [
                                                                   10.553746,
@@ -341,8 +377,8 @@
                                                                   52.971601
                                                               ],
                                                               [
-                                                                  10.559833,
-                                                                  52.971689
+                                                                  10.559832,
+                                                                  52.971626
                                                               ],
                                                               [
                                                                   10.559835,

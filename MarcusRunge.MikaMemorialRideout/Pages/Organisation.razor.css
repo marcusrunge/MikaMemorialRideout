@@ -10,55 +10,40 @@
 .organisation-legal-note strong { color: #991b1b; }
 .organisation-legal-note p { margin: 0.25rem 0 0; color: #6b2730; }
 .organisation-role-grid { display: grid; gap: 1rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.organisation-role-card { padding: 1.4rem; border: 1px solid var(--color-border); border-radius: var(--border-radius); background: #fff; box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.05); }
-.organisation-role-card--lead { border-top: 0.35rem solid var(--color-primary); }
-.organisation-role-card__position { color: var(--color-primary); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
+.organisation-role-card {
+    --role-accent: var(--color-primary);
+    --role-tint: var(--color-primary-light);
+    padding: 1.4rem;
+    border: 1px solid var(--color-border);
+    border-top: 0.35rem solid var(--role-accent);
+    border-radius: var(--border-radius);
+    background: linear-gradient(180deg, var(--role-tint) 0, #ffffff 5.5rem);
+    box-shadow: 0 0.5rem 1.5rem rgba(15, 23, 42, 0.05);
+}
+.organisation-role-card--captain { --role-accent: #f97316; --role-tint: #fff7ed; }
+.organisation-role-card--marshal { --role-accent: #0f766e; --role-tint: #f0fdfa; }
+.organisation-role-card--sweep { --role-accent: #7c3aed; --role-tint: #f5f3ff; }
+.organisation-role-card__position { color: var(--role-accent); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; }
 .organisation-role-card h2 { margin: 0.35rem 0 1rem; font-size: 1.8rem; }
 .organisation-role-card h3 { margin-top: 1.3rem; font-size: 1rem; }
 .organisation-role-card ul { margin: 0; padding-left: 1.15rem; color: var(--color-text-muted); }
 .organisation-role-card li + li { margin-top: 0.4rem; }
-
+.organisation-role-card__notice { margin: -0.55rem 0 1.2rem; color: var(--color-text-muted); font-size: 0.9rem; line-height: 1.45; }
 .organisation-identifier {
     display: grid;
     width: fit-content;
     margin-block: 1rem 1.35rem;
     padding: 0.8rem 1rem;
-    border-left: 0.3rem solid var(--color-primary);
+    border-left: 0.3rem solid var(--role-accent);
     border-radius: 0.55rem;
-    background: var(--color-primary-light);
+    background: var(--role-tint);
     gap: 0.15rem;
 }
-
-.organisation-identifier span {
-    color: var(--color-primary);
-    font-size: 0.72rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.organisation-identifier strong {
-    color: var(--color-text);
-    font-size: 1.2rem;
-    line-height: 1.35;
-}
-
-.organisation-identifier--pending {
-    border-left-color: var(--color-unknown);
-    background: var(--color-background-muted);
-}
-
-.organisation-identifier--pending span { color: var(--color-text-muted); }
-.organisation-identifier--pending strong { font-size: 0.95rem; }
+.organisation-identifier span { color: var(--role-accent); font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.organisation-identifier strong { color: var(--color-text); font-size: 1.2rem; line-height: 1.35; }
 .organisation-limits, .organisation-identification { margin-top: 3rem; }
 .organisation-limits__grid { display: grid; margin: 1.25rem 0; gap: 0.65rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .organisation-limits__grid span { padding: 0.8rem 1rem; border-left: 0.3rem solid #b91c1c; border-radius: 0.5rem; background: #fff; box-shadow: 0 0.3rem 1rem rgba(15, 23, 42, 0.04); }
 .organisation-limits > p:last-child, .organisation-identification > p:last-child { color: var(--color-text-muted); }
-
-@media (max-width: 62rem) {
-    .organisation-role-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 38rem) {
-    .organisation-limits__grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 62rem) { .organisation-role-grid { grid-template-columns: 1fr; } }
+@media (max-width: 38rem) { .organisation-limits__grid { grid-template-columns: 1fr; } }

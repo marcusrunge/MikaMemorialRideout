@@ -10,20 +10,19 @@
 .route-map { position: relative; z-index: 0; overflow: hidden; min-height: 32rem; border: 1px solid var(--color-border); border-radius: var(--border-radius); background: #e2e8f0; box-shadow: var(--shadow); }
 .route-map-message { margin: 1rem 0 0; padding: 0.85rem 1rem; border-left: 0.3rem solid var(--color-red); border-radius: 0.5rem; background: #fef2f2; color: #7f1d1d; font-weight: 700; }
 .route-map-note { margin: 1rem 0 0; color: var(--color-text-muted); }
-.route-map-note code { padding: 0.1rem 0.3rem; border-radius: 0.25rem; background: #e2e8f0; font-size: 0.9em; }
+.route-description { margin-bottom: 3.5rem; }
+.route-description ol { display: grid; margin: 0; padding: 0; gap: 0.75rem; list-style: none; }
+.route-description li { display: grid; align-items: start; padding: 1rem 1.1rem; border: 1px solid var(--color-border); border-radius: 0.75rem; background: #fff; gap: 0.9rem; grid-template-columns: 2rem minmax(0, 1fr); }
+.route-description li > span, .route-waypoints li > span { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 50%; background: var(--color-primary); color: #fff; font-weight: 800; }
+.route-description li p { margin: 0; color: var(--color-text); }
+.route-description__notice { margin: 1rem 0 0; padding: 0.9rem 1rem; border-left: 0.3rem solid var(--color-primary); border-radius: 0.5rem; background: var(--color-primary-light); color: var(--color-text-muted); }
 .route-waypoints ol { display: grid; margin: 0; padding: 0; gap: 0.65rem; list-style: none; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .route-waypoints li { display: flex; align-items: center; padding: 0.9rem 1rem; border: 1px solid var(--color-border); border-radius: 0.75rem; background: #fff; gap: 0.8rem; }
-.route-waypoints li > span { display: grid; width: 2rem; height: 2rem; flex: 0 0 2rem; place-items: center; border-radius: 50%; background: var(--color-primary); color: #fff; font-weight: 800; }
+.route-waypoints li > span { flex: 0 0 2rem; }
 .route-waypoints strong, .route-waypoints small { display: block; }
 .route-waypoints small { color: var(--color-text-muted); }
-
 .route-map :global(.rideout-waypoint-wrapper) { border: 0; background: transparent; }
 .route-map :global(.rideout-waypoint) { display: grid; width: 28px; height: 28px; place-items: center; border: 3px solid #3b16d9; border-radius: 50%; background: #fff; color: #20105d; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.28); font-size: 0.72rem; font-weight: 900; }
 .route-map :global(.rideout-waypoint--start-finish) { width: 34px; height: 34px; border-color: #fff; background: #f97316; color: #fff; box-shadow: 0 0 0 3px #20105d, 0 3px 8px rgba(15, 23, 42, 0.35); font-size: 0.62rem; }
 .route-map :global(.leaflet-control) { z-index: 400; }
-
-@media (max-width: 48rem) {
-    .route-event-card, .route-map-section__heading { align-items: flex-start; flex-direction: column; }
-    .route-waypoints ol { grid-template-columns: 1fr; }
-    .route-map { min-height: 25rem; }
-}
+@media (max-width: 48rem) { .route-event-card, .route-map-section__heading { align-items: flex-start; flex-direction: column; } .route-waypoints ol { grid-template-columns: 1fr; } .route-map { min-height: 25rem; } }

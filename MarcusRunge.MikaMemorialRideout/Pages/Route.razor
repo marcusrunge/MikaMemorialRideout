@@ -6,18 +6,50 @@
 
 <main class="subpage route-page">
     <div class="content-container">
-        <header class="subpage__header"><p class="eyebrow">Strecke</p><h1>Route des Rideouts</h1><p>Die Karte zeigt den aus den festgelegten Wegpunkten berechneten Straßenverlauf. Die Route wird vor der endgültigen Veröffentlichung vollständig geprüft.</p></header>
+        <header class="subpage__header">
+            <p class="eyebrow">Strecke</p>
+            <h1>Route des Rideouts</h1>
+            <p>Die Karte zeigt den geplanten Straßenverlauf einschließlich der Umleitung über Sternstraße, Nothmannstraße und Ebstorfer Straße. Kurzfristige Änderungen aufgrund von Sperrungen, Baustellen, Verkehrsmaßnahmen, Witterung oder behördlichen Vorgaben bleiben möglich.</p>
+        </header>
 
-        <section class="route-event-card" aria-labelledby="route-event-heading"><div><span>Sonntag, 23. August 2026</span><h2 id="route-event-heading">Albrecht-Thaer-Gelände</h2><p>Albrecht-Thaer-Straße, 29525 Uelzen</p></div><strong>Beginn 13:00 Uhr</strong></section>
+        <section class="route-event-card" aria-labelledby="route-event-heading">
+            <div><span>Sonntag, 23. August 2026</span><h2 id="route-event-heading">Albrecht-Thaer-Gelände</h2><p>Albrecht-Thaer-Straße, 29525 Uelzen</p></div>
+            <strong>Beginn 13:00 Uhr</strong>
+        </section>
 
         <section class="route-map-section" aria-labelledby="route-map-heading">
-            <div class="route-map-section__heading"><div><p class="eyebrow">OpenStreetMap</p><h2 id="route-map-heading">Geplanter Straßenverlauf</h2></div><a class="route-external-link" href="https://maps.app.goo.gl/4j4qVtasPcwnxdjx7" target="_blank" rel="noopener noreferrer">Originalroute in Google Maps öffnen</a></div>
+            <div class="route-map-section__heading">
+                <div><p class="eyebrow">OpenStreetMap</p><h2 id="route-map-heading">Geplanter Straßenverlauf</h2></div>
+                <a class="route-external-link" href="https://maps.app.goo.gl/GorEcopWw8F5x7S16" target="_blank" rel="noopener noreferrer">Originalroute in Google Maps öffnen</a>
+            </div>
             <div id="rideout-route-map" class="route-map" aria-label="Interaktive Karte der geplanten Rideout-Route"></div>
-            @if (!string.IsNullOrWhiteSpace(_mapMessage)) { <p class="route-map-message" role="status">@_mapMessage</p> }
+            @if (!string.IsNullOrWhiteSpace(_mapMessage))
+            {
+                <p class="route-map-message" role="status">@_mapMessage</p>
+            }
             <p class="route-map-note">Die blaue Linie und die Wegpunkte werden aus lokalen GeoJSON-Dateien geladen. Die Kartendarstellung verwendet lokal eingebundenes Leaflet.</p>
         </section>
 
-        <section class="route-waypoints" aria-labelledby="route-waypoints-heading"><div class="section-heading"><p class="eyebrow">Fahrreihenfolge</p><h2 id="route-waypoints-heading">Geplante Wegpunkte</h2></div><ol>@foreach (var waypoint in Waypoints) { <li><span>@waypoint.Sequence</span><div><strong>@waypoint.Name</strong>@if (!string.IsNullOrWhiteSpace(waypoint.Note)) { <small>@waypoint.Note</small> }</div></li> }</ol></section>
+        <section class="route-description" aria-labelledby="route-description-heading">
+            <div class="section-heading"><p class="eyebrow">Streckenbeschreibung</p><h2 id="route-description-heading">Der Rideout in zehn Abschnitten</h2></div>
+            <ol>
+                @foreach (var section in RouteSections)
+                {
+                    <li><span>@section.Sequence</span><p>@section.Description</p></li>
+                }
+            </ol>
+            <p class="route-description__notice">Kurzfristige Änderungen aufgrund von Baustellen, Straßensperrungen, Verkehrsmaßnahmen, Witterung oder behördlichen Vorgaben bleiben möglich.</p>
+        </section>
+
+        <section class="route-waypoints" aria-labelledby="route-waypoints-heading">
+            <div class="section-heading"><p class="eyebrow">Fahrreihenfolge</p><h2 id="route-waypoints-heading">Geplante Wegpunkte</h2></div>
+            <ol>
+                @foreach (var waypoint in Waypoints)
+                {
+                    <li><span>@waypoint.Sequence</span><div><strong>@waypoint.Name</strong>@if (!string.IsNullOrWhiteSpace(waypoint.Note)) { <small>@waypoint.Note</small> }</div></li>
+                }
+            </ol>
+        </section>
     </div>
 </main>
 
@@ -48,6 +80,35 @@
         catch (JSDisconnectedException) { }
     }
 
-    private static readonly Waypoint[] Waypoints = [new(1, "Albrecht-Thaer-Gelände", "Start und Ziel"), new(2, "Elektro-Fundgrube", "Lüneburger Straße 82"), new(3, "Zur Wipperau", null), new(4, "Wegpunkt nordöstlich von Uelzen", null), new(5, "Pieperhöfen 2A", null), new(6, "Hochgraefestraße 2", null), new(7, "Celler Straße", null), new(8, "K8 südwestlich von Uelzen", null), new(9, "Albrecht-Thaer-Gelände", "Rückkehr zum Ausgangspunkt")];
+    private static readonly RouteSection[] RouteSections =
+    [
+        new(1, "Start auf der Albrecht-Thaer-Straße in Richtung Sternstraße."),
+        new(2, "Von der Sternstraße führt die Route über die Nothmannstraße und die Ebstorfer Straße bis zur Johnsburg."),
+        new(3, "Von der Johnsburg geht es über die L 250 und die K 3 weiter nach Molzen."),
+        new(4, "Ab Molzen verläuft die Strecke über Zur Wipperau und Woltersburg nach Pieperhöfen."),
+        new(5, "Von Pieperhöfen führt die Route auf die B 191 in Richtung Uelzen und anschließend auf den Uhlenring B 4/B 191."),
+        new(6, "Der Uhlenring wird an der Abfahrt Esterholzer Straße/L 270 verlassen. Von dort führt die Strecke an der Unfallstelle vorbei zur Hochgraefestraße."),
+        new(7, "Über die Hochgraefestraße, Greyerstraße, Veerßer Straße und Celler Straße geht es weiter nach Holdenstedt."),
+        new(8, "In Holdenstedt führt die Route durch die Blumenstraße, am Friedhof vorbei und anschließend über die K 8 nach Klein Süstedt."),
+        new(9, "Von Klein Süstedt geht es über Hansen und die B 71 zurück nach Uelzen bis zur Celler Straße."),
+        new(10, "Der letzte Abschnitt führt von der Celler Straße über den Bohldamm und die Albrecht-Thaer-Straße zurück zum Ziel.")
+    ];
+
+    private static readonly Waypoint[] Waypoints =
+    [
+        new(1, "Albrecht-Thaer-Gelände", "Start und Ziel"),
+        new(2, "Sternstraße", "Umleitung wegen der gesperrten Brücke"),
+        new(3, "Nothmannstraße", null),
+        new(4, "Ebstorfer Straße", null),
+        new(5, "Johnsburg", "Übergang auf den bisherigen Streckenverlauf"),
+        new(6, "Zur Wipperau", null),
+        new(7, "Pieperhöfen", null),
+        new(8, "Esterholzer Straße/L 270", "Abfahrt vom Uhlenring"),
+        new(9, "Hochgraefestraße", null),
+        new(10, "Klein Süstedt", null),
+        new(11, "Celler Straße und Bohldamm", "Rückweg zum Ziel")
+    ];
+
+    private sealed record RouteSection(int Sequence, string Description);
     private sealed record Waypoint(int Sequence, string Name, string? Note);
 }

@@ -20,7 +20,10 @@ $OutputPath = [System.IO.Path]::GetFullPath($OutputPath)
 # wird die OSRM-Geometrie nach der Berechnung deterministisch korrigiert.
 $routePoints = @(
     [PSCustomObject]@{ Name = "Start Albrecht-Thaer-Gelaende"; Longitude = 10.5469518; Latitude = 52.9660785 },
-    [PSCustomObject]@{ Name = "Elektro-Fundgrube"; Longitude = 10.5600803; Latitude = 52.9716882 },
+    [PSCustomObject]@{ Name = "Sternstrasse"; Longitude = 10.550506; Latitude = 52.968769 },
+    [PSCustomObject]@{ Name = "Nothmannstrasse"; Longitude = 10.547772; Latitude = 52.970795 },
+    [PSCustomObject]@{ Name = "Ebstorfer Strasse"; Longitude = 10.552916; Latitude = 52.974253 },
+    [PSCustomObject]@{ Name = "Johnsburg"; Longitude = 10.559836; Latitude = 52.971626 },
     [PSCustomObject]@{ Name = "Zur Wipperau"; Longitude = 10.6054018; Latitude = 53.0030067 },
     [PSCustomObject]@{ Name = "Nordost-Wegpunkt"; Longitude = 10.6196660; Latitude = 52.9819037 },
     [PSCustomObject]@{ Name = "Pieperhoefen"; Longitude = 10.584848840701314; Latitude = 52.94856097401077 },
@@ -41,7 +44,7 @@ $coordinates = $routePoints | ForEach-Object {
 $routeUri = "https://router.project-osrm.org/route/v1/driving/$($coordinates -join ';')?overview=full&geometries=geojson&steps=false"
 $headers = @{ "User-Agent" = "MikaMemorialRideout-RoutePreparation/1.0"; "Accept" = "application/json" }
 
-Write-Host "Routenberechnung fuer die Acht wird abgerufen ..."
+Write-Host "Routenberechnung fuer die Acht mit Brueckenumleitung wird abgerufen ..."
 $response = Invoke-RestMethod -Method Get -Uri $routeUri -Headers $headers
 
 if ($response.code -ne "Ok" -or $null -eq $response.routes -or $response.routes.Count -eq 0) {
@@ -110,7 +113,7 @@ $removedCoordinateCount = $esterholzerIndex - $pieperhoefenIndex - 1
 
 $featureCollection = [ordered]@{
     type = "FeatureCollection"
-    name = "Mika Memorial Rideout - Route als Acht"
+    name = "Mika Memorial Rideout - Route als Acht mit Brueckenumleitung"
     properties = [ordered]@{
         source = "OSRM auf Basis von OpenStreetMap-Daten mit lokaler Geometriekorrektur"
         generatedAtUtc = [DateTimeOffset]::UtcNow.ToString("O")
@@ -118,6 +121,7 @@ $featureCollection = [ordered]@{
         durationSeconds = [Math]::Round([double]$route.duration)
         reviewRequired = $true
         routeShape = "figure-eight"
+        bridgeDetour = [ordered]@{ reason = "gesperrte Bruecke"; via = @("Sternstrasse", "Nothmannstrasse", "Ebstorfer Strasse", "Johnsburg") }
         geometryCorrection = [ordered]@{
             name = "L270 Esterholzer Strasse"
             method = "replace-osrm-detour"
@@ -148,5 +152,6 @@ Write-Host "Route erstellt: $OutputPath"
 Write-Host "Entfernung laut Routingdienst: $distanceKilometers km"
 Write-Host "Routingzeit laut Routingdienst: $($duration.ToString('hh\:mm')) Stunden"
 Write-Host "Entfernte Koordinaten des falschen Uhlenring-Stichs: $removedCoordinateCount"
-Write-Host "Geometrie fuehrt jetzt direkt ueber die L270-Ausfahrtsrampe in die Esterholzer Strasse."
+Write-Host "Startabschnitt fuehrt ueber Sternstrasse, Nothmannstrasse, Ebstorfer Strasse und Johnsburg."
+Write-Host "Geometrie fuehrt direkt ueber die L270-Ausfahrtsrampe in die Esterholzer Strasse."
 Write-Warning "Entfernung und Zeit stammen noch aus der OSRM-Ausgangsroute. Bitte die sichtbare Linie vor der Veroeffentlichung abschliessend pruefen."
