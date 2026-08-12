@@ -78,37 +78,164 @@ Any optional service must be configured in accordance with the project's privacy
 The exact project names may differ, but the solution follows this general structure:
 
 ```text
-src/
-├── MemorialRideout.Web/
-│   ├── Components/
-│   ├── Layout/
-│   ├── Pages/
-│   ├── Services/
-│   ├── Properties/
-│   │   ├── Resources.resx
-│   │   └── Resources.de.resx
-│   ├── Program.cs
-│   └── MemorialRideout.Web.csproj
+C:.
+│   .gitattributes
+│   .gitignore
+│   LICENSE.txt
+│   MikaMemorialRideout.slnLaunch.user
+│   MikaMemorialRideout.slnx
+│   README.md
 │
-├── MemorialRideout.Api/
-│   ├── Functions/
-│   ├── Services/
-│   ├── Validation/
-│   ├── Persistence/
-│   ├── Properties/
-│   │   ├── Resources.resx
-│   │   └── Resources.de.resx
-│   ├── Program.cs
-│   └── MemorialRideout.Api.csproj
+├───.github
+│   └───workflows
+│           azure-static-web-apps-orange-field-0302d2c10.yml
 │
-├── MemorialRideout.Contracts/
-│   ├── Requests/
-│   ├── Responses/
-│   ├── Models/
-│   └── MemorialRideout.Contracts.csproj
+├───MarcusRunge.MikaMemorialRideout
+│   │   App.razor
+│   │   MarcusRunge.MikaMemorialRideout.csproj
+│   │   MarcusRunge.MikaMemorialRideout.csproj.user
+│   │   Program.cs
+│   │   _Imports.razor
+│   │   
+│   ├───Components
+│   │   │   PublicFooter.razor
+│   │   │   PublicFooter.razor.css
+│   │   │   PublicNavigation.razor
+│   │   │   PublicNavigation.razor.css
+│   │   │ 
+│   │   └───Registration
+│   │       GroupRegistrationForm.razor
+│   │       IndividualRegistrationForm.razor
+│   ├───Contracts
+│   │       AdminRegistrationEditorItem.cs
+│   │       AdminRegistrationMutationResponse.cs
+│   │       AdminRegistrationResponse.cs
+│   │       AdminRegistrationsResponse.cs
+│   │       AdminRegistrationUpdateRequest.cs
+│   │       AdminVerificationResponse.cs
+│   │       CreateRegistrationRequest.cs
+│   │       CreateRegistrationResponse.cs
+│   │       GroupRegistrationInput.cs
+│   │       IndividualRegistrationInput.cs
+│   │       PlanningStatusEditorItem.cs
+│   │       PlanningStatusItemResponse.cs
+│   │       PlanningStatusLevel.cs
+│   │       PlanningStatusResponse.cs
+│   │       PublicSummaryResponse.cs
+│   │       UpdatePlanningStatusRequest.cs
+│   │       UpdatePlanningStatusResponse.cs
+│   │
+│   ├───Layout
+│   │       AdminLayout.razor
+│   │       MainLayout.razor
+│   │   
+│   ├───Pages
+│   │       Admin.razor
+│   │       CurrentInformation.razor
+│   │       Home.razor
+│   │       Imprint.razor
+│   │       Mika.razor
+│   │       Mika.razor.css
+│   │       NotFound.razor
+│   │       Organisation.razor
+│   │       Organisation.razor.css
+│   │       Privacy.razor
+│   │       Route.razor
+│   │       Route.razor.css
+│   │       Structure.razor
+│   │
+│   ├───Properties
+│   │       launchSettings.json
+│   │
+│   ├───Scripts
+│   │       Generate-RideoutAdminCredentials.ps1
+│   │       Generate-RideoutRoute.ps1
+│   │
+│   ├───Services
+│   │       IRideoutApiClient.cs
+│   │       RideoutApiClient.cs
+│   │
+│   └───wwwroot
+│       │   appsettings.Development.json
+│       │   appsettings.json
+│       │   icon-192.png
+│       │   index.html
+│       │   staticwebapp.config.json
+│       │
+│       ├───assets
+│       │       mika-memorial.jpg
+│       │       mika-rideout-route.geojson
+│       │       mika-rideout-waypoints.geojson
+│       │       rideout-structure.svg
+│       │
+│       ├───css
+│       │       app.css
+│       │
+│       ├───js
+│       │       rideout-map.js
+│       │
+│       └───lib
+│           └───leaflet
+│               │   leaflet.css
+│               │   leaflet.js
+│               │
+│               └───images
+│                       layers-2x.png
+│                       layers.png
+│                       marker-icon-2x.png
+│                       marker-icon.png
+│                       marker-shadow.png
 │
-└── MemorialRideout.Tests/
-    ├── Api/
-    ├── Services/
-    ├── Validation/
-    └── MemorialRideout.Tests.csproj
+└───MarcusRunge.MikaMemorialRideout.Api
+    │   .gitignore
+    │   host.json
+    │   local.settings.example.json
+    │   local.settings.json
+    │   MarcusRunge.MikaMemorialRideout.Api.csproj
+    │   Program.cs
+    │    
+    ├───Contracts
+    │       AdminRegistrationMutationResponse.cs
+    │       AdminRegistrationResponse.cs
+    │       AdminRegistrationsResponse.cs
+    │       AdminRegistrationUpdateRequest.cs
+    │       AdminVerificationResponse.cs
+    │       CreateRegistrationRequest.cs
+    │       CreateRegistrationResponse.cs
+    │       PlanningStatusItemResponse.cs
+    │       PlanningStatusLevel.cs
+    │       PlanningStatusResponse.cs
+    │       PlanningStatusValidation.cs
+    │       PublicSummaryResponse.cs
+    │       RegistrationValidation.cs
+    │       UpdatePlanningStatusRequest.cs
+    │       UpdatePlanningStatusResponse.cs
+    │
+    ├───Functions
+    │       AdminRegistrationFunctions.cs
+    │       PlanningStatusFunctions.cs
+    │       PublicSummaryFunctions.cs
+    │       RegistrationFunctions.cs
+    |
+    ├───Properties
+    │       launchSettings.json
+    │       serviceDependencies.json
+    │       serviceDependencies.local.json
+    │       serviceDependencies.local.json.user
+    │
+    ├───Security
+    │       AdminCodeVerifier.cs
+    │       IAdminCodeVerifier.cs
+    │
+    └───Storage
+            AdminRegistrationDeleteResult.cs
+            AdminRegistrationUpdateResult.cs
+            IPlanningStatusRepository.cs
+            IRegistrationRepository.cs
+            PlanningStatusCatalog.cs
+            PlanningStatusDefinition.cs
+            PlanningStatusEntity.cs
+            RegistrationCreateResult.cs
+            RegistrationEntity.cs
+            TablePlanningStatusRepository.cs
+            TableRegistrationRepository.cs
