@@ -1,0 +1,26 @@
+.legal-page__email-button {
+    appearance: none;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: currentColor;
+    font: inherit;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.legal-page__email-button:hover,
+.legal-page__email-button:focus {
+    text-decoration-thickness: 2px;
+}
+
+.legal-page__email-button:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+}
+
+.legal-page__contact-hint {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    opacity: 0.85;
+}

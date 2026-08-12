@@ -1,4 +1,5 @@
 @page "/impressum"
+@inject IJSRuntime Js
 
 <PageTitle>Impressum | Mika Memorial Rideout</PageTitle>
 
@@ -23,27 +24,56 @@
             <h2 id="contact-heading">Kontakt</h2>
             <p>
                 Telefon: <a href="tel:+4958190776904">0581 90776904</a><br />
-                E-Mail: <a href="mailto:mr.software@outlook.de">mr.software@outlook.de</a>
+                E-Mail:
+                <button type="button"
+                        class="legal-page__email-button"
+                        title="E-Mail-Programm öffnen"
+                        @onclick="OpenEmailClientAsync">
+                    <span>@EmailLocalPart</span><span aria-hidden="true">&#64;</span><span>@EmailDomainPart</span>
+                </button>
+            </p>
+            <p class="legal-page__contact-hint">
+                Für organisatorische Anfragen zum Mika Memorial Rideout kann bevorzugt das Kontaktformular verwendet werden.
             </p>
         </section>
 
         <section aria-labelledby="purpose-heading">
             <h2 id="purpose-heading">Zweck des Angebots</h2>
-            <p>Diese Website dient der öffentlichen Information und Organisation des Mika Memorial Rideouts sowie der Entgegennahme von Einzel- und Gruppenanmeldungen.</p>
+            <p>
+                Diese Website dient der öffentlichen Information und Organisation des Mika Memorial Rideouts sowie der Entgegennahme von Einzel- und Gruppenanmeldungen.
+            </p>
         </section>
 
         <section aria-labelledby="liability-links-heading">
             <h2 id="liability-links-heading">Externe Links</h2>
-            <p>Diese Website enthält Links zu externen Angeboten Dritter. Für deren Inhalte und Datenschutzbestimmungen sind ausschließlich die jeweiligen Anbieter verantwortlich.</p>
+            <p>
+                Diese Website enthält Links zu externen Angeboten Dritter. Für deren Inhalte und Datenschutzbestimmungen sind ausschließlich die jeweiligen Anbieter verantwortlich.
+            </p>
         </section>
 
         <section aria-labelledby="legal-guidance-heading">
             <h2 id="legal-guidance-heading">Rechtliche Begleitung</h2>
             <p>
                 Die Organisation des Mika Memorial Rideouts wird in rechtlichen Fragen durch
-                <a href="https://www.springer-anwalt.de/" target="_blank" rel="noopener noreferrer">Rechtsanwalt Marius Springer aus Uelzen</a>
+                <a href="https://www.springer-anwalt.de/" target="_blank" rel="noopener noreferrer">
+                    Rechtsanwalt Marius Springer aus Uelzen
+                </a>
                 begleitet.
             </p>
         </section>
     </div>
 </main>
+
+@code {
+    private const string EmailLocalPart = "mr.software";
+    private const string EmailDomainPart = "outlook.de";
+
+    private static string EmailAddress => $"{EmailLocalPart}@{EmailDomainPart}";
+
+    private async Task OpenEmailClientAsync()
+    {
+        // Die Adresse steht nicht mehr als statischer mailto-Link im ausgelieferten HTML.
+        // Das reduziert einfache Scraper-Treffer, ersetzt aber keine separate Impressumsadresse und keinen Spamfilter.
+        await Js.InvokeVoidAsync("open", $"mailto:{EmailAddress}", "_self");
+    }
+}
