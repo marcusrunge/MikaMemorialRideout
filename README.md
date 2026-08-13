@@ -12,6 +12,7 @@ Further information is available from the following public sources:
 
 - [Memorial page for Mika Nevio Teichmann](https://trauer.az-online.de/traueranzeige/mika-nevio-teichmann)
 - [AZ Online report about the accident](https://www.az-online.de/uelzen/stadt-uelzen/toedlicher-unfall-in-uelzen-motorradfahrer-19-prallt-gegen-geparkten-lkw-und-stirbt-94425249.html)
+- [Mika Memorial Rideout](https://www.mikamemorial.dedyn.io)
 
 Please treat these links, the memorial, the family, and all participants with respect.
 
