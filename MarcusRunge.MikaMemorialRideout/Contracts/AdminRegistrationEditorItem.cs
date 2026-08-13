@@ -32,6 +32,8 @@ public sealed class AdminRegistrationEditorItem
     public string? Message { get; set; }
 
     public DateTimeOffset CreatedAtUtc { get; set; }
+    public DateTimeOffset? RespondedAtUtc { get; set; }
+    public DateTimeOffset? AnonymizedAtUtc { get; set; }
     public bool IsSaving { get; set; }
     public bool IsDeleting { get; set; }
     public bool DeleteConfirmationVisible { get; set; }
@@ -50,7 +52,9 @@ public sealed class AdminRegistrationEditorItem
         Origin = response.Origin,
         PersonCount = response.PersonCount,
         Message = response.Message,
-        CreatedAtUtc = response.CreatedAtUtc
+        CreatedAtUtc = response.CreatedAtUtc,
+        RespondedAtUtc = response.RespondedAtUtc,
+        AnonymizedAtUtc = response.AnonymizedAtUtc
     };
 
     public void Apply(AdminRegistrationResponse response)
@@ -65,5 +69,7 @@ public sealed class AdminRegistrationEditorItem
         PersonCount = response.PersonCount;
         Message = response.Message;
         CreatedAtUtc = response.CreatedAtUtc;
+        RespondedAtUtc = response.RespondedAtUtc;
+        AnonymizedAtUtc = response.AnonymizedAtUtc;
     }
 }

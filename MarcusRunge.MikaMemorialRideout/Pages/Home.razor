@@ -52,6 +52,10 @@
                 <p>Bitte wähle die passende Anmeldung. Entscheidend sind Herkunft und Personenanzahl.</p>
             </div>
 
+            @if (!_registrationState.IsRegistrationOpen)
+            {
+                <aside class="registration-closed-notice" role="status"><strong>Die Anmeldung ist beendet</strong><p>Der Rideout hat stattgefunden. Die Formulare bleiben als Teil der Erinnerungsseite sichtbar, können aber nicht mehr ausgefüllt oder abgesendet werden.</p></aside>
+            }
             <aside class="registration-respect-notice" aria-label="Hinweis zu ernst gemeinten Anmeldungen">
                 <strong>Bitte nur ernst gemeinte Anmeldungen absenden.</strong>
                 <p>Der Mika Memorial Rideout dient dem gemeinsamen Gedenken an Mika. Falsche, scherzhafte oder automatisierte Einträge sind pietätlos, erschweren die Organisation und werden entfernt.</p>
@@ -61,13 +65,13 @@
                 <article class="registration-card registration-card--form">
                     <span class="card-category">Einzelanmeldung</span>
                     <h3>Ich melde mich selbst an</h3>
-                    <IndividualRegistrationForm RegistrationCreated="ReloadSummaryAsync" />
+                    <IndividualRegistrationForm Disabled="@(!_registrationState.IsRegistrationOpen)" RegistrationCreated="ReloadSummaryAsync" />
                 </article>
 
                 <article class="registration-card registration-card--form">
                     <span class="card-category">Gruppenanmeldung</span>
                     <h3>Ich melde eine Gruppe an</h3>
-                    <GroupRegistrationForm RegistrationCreated="ReloadSummaryAsync" />
+                    <GroupRegistrationForm Disabled="@(!_registrationState.IsRegistrationOpen)" RegistrationCreated="ReloadSummaryAsync" />
                 </article>
             </div>
         </div>
@@ -76,6 +80,7 @@
 
 @code {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
+    private RegistrationStateResponse _registrationState = new(true, null);
     private PublicSummaryResponse _summary = new(0, 0, 0, 0);
     private string? _loadMessage;
 
@@ -85,7 +90,11 @@
     {
         try
         {
-            _summary = await ApiClient.GetPublicSummaryAsync(_cancellationTokenSource.Token);
+            var summaryTask = ApiClient.GetPublicSummaryAsync(_cancellationTokenSource.Token);
+            var stateTask = ApiClient.GetRegistrationStateAsync(_cancellationTokenSource.Token);
+            await Task.WhenAll(summaryTask, stateTask);
+            _summary = await summaryTask;
+            _registrationState = await stateTask;
             _loadMessage = null;
         }
         catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested)

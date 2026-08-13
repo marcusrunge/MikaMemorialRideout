@@ -2,6 +2,7 @@
 @page "/admin/status"
 @layout AdminLayout
 @inject IRideoutApiClient ApiClient
+@inject NavigationManager Navigation
 @implements IDisposable
 
 <PageTitle>Interne Verwaltung | Mika Memorial Rideout</PageTitle>
@@ -71,7 +72,13 @@
                         <button class="admin-button admin-button--secondary" type="button" @onclick="LoadRegistrationsAsync">Neu laden</button>
                     </div>
 
-                    <div class="admin-metrics"><article><span>Anmeldungen</span><strong>@_registrations.Count</strong></article><article><span>Personen</span><strong>@_registrations.Sum(item => item.PersonCount)</strong></article></div>
+                    <section class="admin-lifecycle" aria-labelledby="lifecycle-heading">
+                        <div><p class="eyebrow">Memorial-Zustand</p><h3 id="lifecycle-heading">Anmeldung und Datenlebenszyklus</h3><p>Schließe zuerst die Anmeldung, versende bei Bedarf eine letzte Mitteilung und anonymisiere die Daten anschließend endgültig.</p></div>
+                        <div class="admin-lifecycle__status"><strong>@(_registrationState.IsRegistrationOpen ? "Anmeldung geöffnet" : "Anmeldung geschlossen")</strong><button class="admin-button @(_registrationState.IsRegistrationOpen ? "admin-button--danger-ghost" : "admin-button--secondary")" type="button" disabled="@_isUpdatingRegistrationState" @onclick="ToggleRegistrationStateAsync">@(_registrationState.IsRegistrationOpen ? "Anmeldung schließen" : "Anmeldung wieder öffnen")</button></div>
+                        <div class="admin-lifecycle__actions"><button class="admin-button admin-button--secondary" type="button" disabled="@(!_registrations.Any(item => !item.AnonymizedAtUtc.HasValue))" @onclick="OpenBulkEmail">E-Mail an alle Anmelder</button><button class="admin-button admin-button--danger" type="button" disabled="@(_registrationState.IsRegistrationOpen || !_registrations.Any(item => !item.AnonymizedAtUtc.HasValue))" @onclick="() => _anonymizeDialogVisible = true">Anmeldedaten anonymisieren</button></div>
+                        @if (!string.IsNullOrWhiteSpace(_lifecycleMessage)) { <p class="@_lifecycleMessageClass" role="status">@_lifecycleMessage</p> }
+                    </section>
+                    <div class="admin-metrics"><article><span>Anmeldungen</span><strong>@_registrations.Count</strong></article><article><span>Personen</span><strong>@_registrations.Sum(item => item.PersonCount)</strong></article><article><span>Offene Nachrichten</span><strong>@_registrations.Count(item => !string.IsNullOrWhiteSpace(item.Message) && !item.RespondedAtUtc.HasValue)</strong></article></div>
 
                     <div class="admin-filters">
                         <div class="form-field"><label for="registration-search">Suchen</label><input id="registration-search" type="search" @bind="_searchText" @bind:event="oninput" placeholder="Name, E-Mail, Gruppe oder Herkunft" /></div>
@@ -98,12 +105,23 @@
                                 <article class="registration-list-item">
                                     <div class="registration-table registration-table--row">
                                         <span><span class="registration-type-badge">@GetRegistrationTypeShortText(item.RegistrationType)</span></span>
-                                        <span class="registration-primary"><strong>@GetRegistrationHeading(item)</strong><small>@(item.RegistrationType == "group" ? item.Name : item.Message)</small></span>
+                                        <span class="registration-primary">
+                                            <strong>@GetRegistrationHeading(item)</strong>
+                                            <small>@(item.RegistrationType == "group" ? item.Name : item.Message)</small>
+                                            @if (item.RespondedAtUtc.HasValue)
+                                            {
+                                                <span class="registration-response-badge" title="Beantwortet am @item.RespondedAtUtc.Value.ToLocalTime().ToString("dd.MM.yyyy, HH:mm") Uhr">Beantwortet</span>
+                                            }
+                                            else if (!string.IsNullOrWhiteSpace(item.Message))
+                                            {
+                                                <span class="registration-response-badge registration-response-badge--open">Antwort offen</span>
+                                            }
+                                        </span>
                                         <span class="registration-contact"><a href="@($"mailto:{item.Email}")">@item.Email</a></span>
                                         <span>@item.Origin</span>
                                         <span class="registration-count">@item.PersonCount</span>
                                         <span>@item.CreatedAtUtc.ToLocalTime().ToString("dd.MM.yy, HH:mm")</span>
-                                        <span><button class="admin-button admin-button--icon" type="button" aria-expanded="@item.IsExpanded" @onclick="() => ToggleRegistration(item)">@(item.IsExpanded ? "Schließen" : "Bearbeiten")</button></span>
+                                        <span class="registration-actions">@if (!string.IsNullOrWhiteSpace(item.Message)) { <button class="admin-button admin-button--icon" type="button" @onclick="() => OpenMessage(item)">Nachricht</button> }<button class="admin-button admin-button--icon" type="button" aria-expanded="@item.IsExpanded" @onclick="() => ToggleRegistration(item)">@(item.IsExpanded ? "Schließen" : "Bearbeiten")</button></span>
                                     </div>
 
                                     @if (item.IsExpanded)
@@ -137,6 +155,66 @@
     </div>
 </main>
 
+@if (_messageItem is not null)
+{
+    <div class="admin-dialog-backdrop" role="presentation" @onclick="CloseMessage">
+        <section class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="message-dialog-heading" @onclick:stopPropagation="true">
+            <header>
+                <div><p class="eyebrow">Nachricht</p><h2 id="message-dialog-heading">@GetRegistrationHeading(_messageItem)</h2></div>
+                <button class="admin-dialog__close" type="button" aria-label="Dialog schließen" @onclick="CloseMessage">×</button>
+            </header>
+            <p class="admin-dialog__message">@_messageItem.Message</p>
+            <p><button type="button" class="admin-dialog__email" @onclick="() => ReplyTo(_messageItem)">@_messageItem.Email</button></p>
+            @if (_messageItem.RespondedAtUtc.HasValue)
+            {
+                <p class="admin-response-state">Beantwortet am @_messageItem.RespondedAtUtc.Value.ToLocalTime().ToString("dd.MM.yyyy, HH:mm") Uhr</p>
+            }
+            <footer>
+                <button class="admin-button admin-button--primary" type="button" @onclick="() => ReplyTo(_messageItem)">Antworten</button>
+                <button class="admin-button admin-button--secondary" type="button" @onclick="() => ToggleRespondedAsync(_messageItem)">@(_messageItem.RespondedAtUtc.HasValue ? "Als unbeantwortet markieren" : "Als beantwortet markieren")</button>
+                <button class="admin-button admin-button--secondary" type="button" @onclick="CloseMessage">Schließen</button>
+            </footer>
+        </section>
+    </div>
+}
+
+@if (_bulkEmailDialogVisible)
+{
+    <div class="admin-dialog-backdrop" role="presentation" @onclick="CloseBulkEmailDialog">
+        <section class="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="bulk-dialog-heading" @onclick:stopPropagation="true">
+            <header>
+                <div><p class="eyebrow">Rundnachricht als BCC</p><h2 id="bulk-dialog-heading">E-Mail an alle Anmelder</h2></div>
+                <button class="admin-dialog__close" type="button" aria-label="Dialog schließen" @onclick="CloseBulkEmailDialog">×</button>
+            </header>
+            <p>@BulkEmailRecipients.Count gültige, nicht anonymisierte Adressen werden ausschließlich als Blindkopie eingetragen.</p>
+            <div class="form-field"><label for="bulk-subject">Betreff</label><input id="bulk-subject" @bind="_bulkEmailSubject" /></div>
+            <div class="form-field"><label for="bulk-body">Nachricht</label><textarea id="bulk-body" rows="7" @bind="_bulkEmailBody"></textarea></div>
+            <footer>
+                <button class="admin-button admin-button--primary" type="button" disabled="@(BulkEmailRecipients.Count == 0 || string.IsNullOrWhiteSpace(_bulkEmailSubject))" @onclick="LaunchBulkEmail">Im E-Mail-Programm öffnen</button>
+                <button class="admin-button admin-button--secondary" type="button" @onclick="CloseBulkEmailDialog">Abbrechen</button>
+            </footer>
+        </section>
+    </div>
+}
+
+@if (_anonymizeDialogVisible)
+{
+    <div class="admin-dialog-backdrop" role="presentation" @onclick="CloseAnonymizeDialog">
+        <section class="admin-dialog admin-dialog--danger" role="dialog" aria-modal="true" aria-labelledby="anonymize-dialog-heading" @onclick:stopPropagation="true">
+            <header>
+                <div><p class="eyebrow">Unwiderrufliche Aktion</p><h2 id="anonymize-dialog-heading">Anmeldedaten anonymisieren</h2></div>
+                <button class="admin-dialog__close" type="button" aria-label="Dialog schließen" @onclick="CloseAnonymizeDialog">×</button>
+            </header>
+            <p>Namen, E-Mail-Adressen, Herkunft, Gruppennamen und Nachrichten werden unwiderruflich entfernt oder ersetzt. Danach sind Antworten und Rundnachrichten nicht mehr möglich.</p>
+            <div class="form-field"><label for="anonymize-confirmation">Zum Bestätigen ANONYMISIEREN eingeben</label><input id="anonymize-confirmation" autocomplete="off" @bind="_anonymizeConfirmation" /></div>
+            <footer>
+                <button class="admin-button admin-button--danger" type="button" disabled="@(_isAnonymizing || _anonymizeConfirmation != "ANONYMISIEREN")" @onclick="AnonymizeAsync">@(_isAnonymizing ? "Wird anonymisiert" : "Endgültig anonymisieren")</button>
+                <button class="admin-button admin-button--secondary" type="button" @onclick="CloseAnonymizeDialog">Abbrechen</button>
+            </footer>
+        </section>
+    </div>
+}
+
 @code {
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly List<PlanningStatusEditorItem> _statusItems = [];
@@ -148,12 +226,23 @@
     private bool _isAuthorized;
     private bool _isVerifying;
     private bool _isLoadingRegistrations;
+    private bool _isUpdatingRegistrationState;
+    private bool _bulkEmailDialogVisible;
+    private bool _anonymizeDialogVisible;
+    private bool _isAnonymizing;
+    private string _bulkEmailSubject = "Wichtige Information zum Mika Memorial Rideout";
+    private string _bulkEmailBody = string.Empty;
+    private string _anonymizeConfirmation = string.Empty;
+    private string? _lifecycleMessage;
+    private string _lifecycleMessageClass = "admin-result";
+    private RegistrationStateResponse _registrationState = new(true, null);
+    private AdminRegistrationEditorItem? _messageItem;
     private AdminTab _activeTab = AdminTab.Registrations;
 
     private IEnumerable<AdminRegistrationEditorItem> FilteredRegistrations => _registrations.Where(item => _registrationTypeFilter == "all" || item.RegistrationType == _registrationTypeFilter).Where(item => string.IsNullOrWhiteSpace(_searchText) || MatchesSearch(item, _searchText)).OrderByDescending(item => item.CreatedAtUtc);
 
     private async Task HandleLoginKeyAsync(KeyboardEventArgs args) { if (args.Key == "Enter" && !_isVerifying && !string.IsNullOrWhiteSpace(_adminCode)) await AuthorizeAsync(); }
-    private async Task AuthorizeAsync() { _isVerifying = true; _loginMessage = null; try { var response = await ApiClient.VerifyAdminCodeAsync(_adminCode, _cancellationTokenSource.Token); _isAuthorized = response.Status == "authorized"; if (!_isAuthorized) { _loginMessage = response.Message; return; } await Task.WhenAll(LoadStatusesAsync(), LoadRegistrationsAsync()); } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { _loginMessage = "Die Verwaltung konnte gerade nicht freigeschaltet werden."; } finally { _isVerifying = false; } }
+    private async Task AuthorizeAsync() { _isVerifying = true; _loginMessage = null; try { var response = await ApiClient.VerifyAdminCodeAsync(_adminCode, _cancellationTokenSource.Token); _isAuthorized = response.Status == "authorized"; if (!_isAuthorized) { _loginMessage = response.Message; return; } await Task.WhenAll(LoadStatusesAsync(), LoadRegistrationsAsync(), LoadRegistrationStateAsync()); } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { _loginMessage = "Die Verwaltung konnte gerade nicht freigeschaltet werden."; } finally { _isVerifying = false; } }
     private async Task LoadStatusesAsync() { var response = await ApiClient.GetPlanningStatusAsync(_cancellationTokenSource.Token); _statusItems.Clear(); _statusItems.AddRange(response.Items.Select(PlanningStatusEditorItem.FromResponse)); }
     private async Task LoadRegistrationsAsync() { _isLoadingRegistrations = true; try { var response = await ApiClient.GetAdminRegistrationsAsync(_adminCode, _cancellationTokenSource.Token); _registrations.Clear(); _registrations.AddRange(response.Items.Select(AdminRegistrationEditorItem.FromResponse)); } finally { _isLoadingRegistrations = false; } }
     private static void ToggleRegistration(AdminRegistrationEditorItem item) { item.IsExpanded = !item.IsExpanded; item.DeleteConfirmationVisible = false; item.ResultMessage = null; }
@@ -164,6 +253,40 @@
 
     private async Task DeleteRegistrationAsync(AdminRegistrationEditorItem item) { item.IsDeleting = true; try { var response = await ApiClient.DeleteAdminRegistrationAsync(item.Id, item.Version, _adminCode, _cancellationTokenSource.Token); if (response.Status == "deleted") _registrations.Remove(item); else { item.ResultMessage = response.Message; item.ResultClass = "admin-result admin-result--error"; item.DeleteConfirmationVisible = false; } } catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { item.ResultMessage = "Die Anmeldung konnte gerade nicht gelöscht werden."; item.ResultClass = "admin-result admin-result--error"; item.DeleteConfirmationVisible = false; } finally { item.IsDeleting = false; } }
 
+    private IReadOnlyList<string> BulkEmailRecipients => _registrations.Where(item => !item.AnonymizedAtUtc.HasValue).Select(item => item.Email.Trim()).Where(email => !email.EndsWith(".invalid", StringComparison.OrdinalIgnoreCase)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(email => email).ToArray();
+    private async Task LoadRegistrationStateAsync() => _registrationState = await ApiClient.GetRegistrationStateAsync(_cancellationTokenSource.Token);
+    private async Task ToggleRegistrationStateAsync()
+    {
+        _isUpdatingRegistrationState = true;
+        try { _registrationState = await ApiClient.UpdateRegistrationStateAsync(!_registrationState.IsRegistrationOpen, _adminCode, _cancellationTokenSource.Token); _lifecycleMessage = _registrationState.IsRegistrationOpen ? "Die Anmeldung ist wieder geöffnet." : "Die Anmeldung ist geschlossen. Neue API-Anmeldungen werden abgewiesen."; _lifecycleMessageClass = "admin-result admin-result--success"; }
+        catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { _lifecycleMessage = "Der Anmeldestatus konnte nicht geändert werden."; _lifecycleMessageClass = "admin-result admin-result--error"; }
+        finally { _isUpdatingRegistrationState = false; }
+    }
+    private void OpenMessage(AdminRegistrationEditorItem item) => _messageItem = item;
+    private void CloseMessage() => _messageItem = null;
+    private static string CreateReplyMailTo(AdminRegistrationEditorItem item) => $"mailto:{Uri.EscapeDataString(item.Email)}?subject={Uri.EscapeDataString("Mika Memorial Rideout")}";
+    private void ReplyTo(AdminRegistrationEditorItem item) => Navigation.NavigateTo(CreateReplyMailTo(item), true);
+    private async Task ToggleRespondedAsync(AdminRegistrationEditorItem item)
+    {
+        var response = await ApiClient.SetRegistrationRespondedAsync(item.Id, item.Version, !item.RespondedAtUtc.HasValue, _adminCode, _cancellationTokenSource.Token);
+        if (response.Item is not null) item.Apply(response.Item);
+    }
+    private void OpenBulkEmail() { _bulkEmailBody = string.Empty; _bulkEmailDialogVisible = true; }
+    private void CloseBulkEmailDialog() => _bulkEmailDialogVisible = false;
+    private void LaunchBulkEmail()
+    {
+        var bcc = string.Join(',', BulkEmailRecipients.Select(Uri.EscapeDataString));
+        Navigation.NavigateTo($"mailto:?bcc={bcc}&subject={Uri.EscapeDataString(_bulkEmailSubject)}&body={Uri.EscapeDataString(_bulkEmailBody)}", true);
+    }
+    private void CloseAnonymizeDialog() { if (_isAnonymizing) return; _anonymizeDialogVisible = false; _anonymizeConfirmation = string.Empty; }
+    private async Task AnonymizeAsync()
+    {
+        if (_registrationState.IsRegistrationOpen || _anonymizeConfirmation != "ANONYMISIEREN") return;
+        _isAnonymizing = true;
+        try { var response = await ApiClient.AnonymizeRegistrationsAsync(_adminCode, _cancellationTokenSource.Token); _lifecycleMessage = response.Message; _lifecycleMessageClass = response.Status == "anonymized" ? "admin-result admin-result--success" : "admin-result admin-result--error"; await LoadRegistrationsAsync(); CloseAnonymizeDialog(); }
+        catch (Exception) when (!_cancellationTokenSource.IsCancellationRequested) { _lifecycleMessage = "Die Anonymisierung konnte nicht vollständig ausgeführt werden. Bitte lade die Liste neu und prüfe den Stand."; _lifecycleMessageClass = "admin-result admin-result--error"; }
+        finally { _isAnonymizing = false; _anonymizeDialogVisible = false; _anonymizeConfirmation = string.Empty; }
+    }
     private string GetTabClass(AdminTab tab) => _activeTab == tab ? "admin-tab admin-tab--active" : "admin-tab";
     private static string GetIndicatorClass(PlanningStatusLevel level) => $"status-indicator status-indicator--{level.ToString().ToLowerInvariant()}";
     private static string GetUpdatedText(DateTimeOffset? value) => value.HasValue ? $"Aktualisiert am {value.Value.ToLocalTime():dd.MM.yyyy, HH:mm} Uhr" : "Noch nicht gespeichert";

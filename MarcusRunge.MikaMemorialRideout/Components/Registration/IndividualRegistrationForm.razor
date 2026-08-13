@@ -2,6 +2,7 @@
 
 <EditForm Model="_input" OnValidSubmit="SubmitAsync" class="registration-form">
     <DataAnnotationsValidator />
+    <fieldset class="registration-form__fieldset" disabled="@Disabled">
 
     <div class="form-field">
         <label for="individual-name">Name</label>
@@ -50,6 +51,7 @@
         @(_isSubmitting ? "Anmeldung wird gespeichert" : "Verbindlich anmelden")
     </button>
 
+    </fieldset>
     @if (!string.IsNullOrWhiteSpace(_message))
     {
         <p class="@_messageClass" role="status">@_message</p>
@@ -57,6 +59,7 @@
 </EditForm>
 
 @code {
+    [Parameter] public bool Disabled { get; set; }
     [Parameter]
     public EventCallback RegistrationCreated { get; set; }
 

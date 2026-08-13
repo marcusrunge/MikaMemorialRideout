@@ -11,13 +11,16 @@ internal sealed class RegistrationFunctions
 {
     private readonly ILogger<RegistrationFunctions> _logger;
     private readonly IRegistrationRepository _repository;
+    private readonly IRegistrationStateRepository _stateRepository;
 
     public RegistrationFunctions(
         ILogger<RegistrationFunctions> logger,
-        IRegistrationRepository repository)
+        IRegistrationRepository repository,
+        IRegistrationStateRepository stateRepository)
     {
         _logger = logger;
         _repository = repository;
+        _stateRepository = stateRepository;
     }
 
     [Function("CreateRegistration")]
@@ -29,6 +32,8 @@ internal sealed class RegistrationFunctions
         HttpRequest request,
         CancellationToken cancellationToken)
     {
+        var state = await _stateRepository.GetAsync(cancellationToken);
+        if (!state.IsRegistrationOpen) return new ConflictObjectResult(new CreateRegistrationResponse("closed", "Die Anmeldung ist beendet."));
         CreateRegistrationRequest? input;
 
         try

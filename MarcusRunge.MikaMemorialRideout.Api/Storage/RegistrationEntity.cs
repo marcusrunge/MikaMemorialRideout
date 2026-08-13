@@ -30,4 +30,6 @@ internal sealed class RegistrationEntity : ITableEntity
     public string? Message { get; set; }
 
     public DateTimeOffset CreatedAtUtc { get; set; }
+    public DateTimeOffset? RespondedAtUtc { get; set; }
+    public DateTimeOffset? AnonymizedAtUtc { get; set; }
 }

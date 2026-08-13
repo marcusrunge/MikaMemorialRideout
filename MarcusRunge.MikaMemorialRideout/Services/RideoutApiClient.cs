@@ -15,6 +15,25 @@ public sealed class RideoutApiClient : IRideoutApiClient
         _httpClient = httpClient;
     }
 
+    public async Task<RegistrationStateResponse> GetRegistrationStateAsync(CancellationToken cancellationToken) => await _httpClient.GetFromJsonAsync<RegistrationStateResponse>("api/registration-state", cancellationToken) ?? throw new InvalidOperationException("Der Anmeldestatus konnte nicht gelesen werden.");
+    public async Task<RegistrationStateResponse> UpdateRegistrationStateAsync(bool isOpen, string adminCode, CancellationToken cancellationToken)
+    {
+        using var message = CreateAdminRequest(HttpMethod.Put, $"{ManagementApiBasePath}/registration-state", adminCode, JsonContent.Create(new UpdateRegistrationStateRequest(isOpen)));
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+        return await ReadResponseAsync(response, new RegistrationStateResponse(isOpen, null), cancellationToken);
+    }
+    public async Task<AdminRegistrationMutationResponse> SetRegistrationRespondedAsync(string id, string version, bool isResponded, string adminCode, CancellationToken cancellationToken)
+    {
+        using var message = CreateAdminRequest(HttpMethod.Put, $"{ManagementApiBasePath}/registrations/{Uri.EscapeDataString(id)}/response-state", adminCode, JsonContent.Create(new AdminResponseStateRequest(version, isResponded)));
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+        return await ReadResponseAsync(response, new AdminRegistrationMutationResponse("error", "Die Antwortmarkierung konnte nicht gespeichert werden."), cancellationToken);
+    }
+    public async Task<AdminOperationResponse> AnonymizeRegistrationsAsync(string adminCode, CancellationToken cancellationToken)
+    {
+        using var message = CreateAdminRequest(HttpMethod.Post, $"{ManagementApiBasePath}/registrations/anonymize", adminCode);
+        using var response = await _httpClient.SendAsync(message, cancellationToken);
+        return await ReadResponseAsync(response, new AdminOperationResponse("error", "Die Anonymisierung konnte nicht ausgeführt werden."), cancellationToken);
+    }
     public async Task<PlanningStatusResponse> GetPlanningStatusAsync(CancellationToken cancellationToken) =>
         await _httpClient.GetFromJsonAsync<PlanningStatusResponse>("api/planning-status", cancellationToken)
         ?? throw new InvalidOperationException("Die Statusinformationen konnten nicht gelesen werden.");

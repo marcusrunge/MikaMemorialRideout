@@ -161,6 +161,59 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
         return new AdminRegistrationUpdateResult(AdminRegistrationUpdateStatus.Updated, persisted);
     }
 
+
+    public async Task<AdminRegistrationMutationResponse> SetRespondedAsync(string id, string version, bool isResponded, CancellationToken cancellationToken)
+    {
+        await _tableClient.CreateIfNotExistsAsync(cancellationToken);
+        try
+        {
+            var entity = (await _tableClient.GetEntityAsync<RegistrationEntity>(PartitionKey, id, cancellationToken: cancellationToken)).Value;
+            if (!string.Equals(entity.ETag.ToString(), version, StringComparison.Ordinal)) return new AdminRegistrationMutationResponse("conflict", "Die Anmeldung wurde zwischenzeitlich geändert.");
+            if (entity.AnonymizedAtUtc.HasValue) return new AdminRegistrationMutationResponse("invalid", "Anonymisierte Anmeldungen können nicht beantwortet werden.");
+            entity.RespondedAtUtc = isResponded ? _timeProvider.GetUtcNow() : null;
+            await _tableClient.UpdateEntityAsync(entity, entity.ETag, TableUpdateMode.Merge, cancellationToken);
+            var updated = await GetAdminRegistrationAsync(id, cancellationToken);
+            return new AdminRegistrationMutationResponse("updated", isResponded ? "Als beantwortet markiert." : "Antwortmarkierung entfernt.", updated);
+        }
+        catch (RequestFailedException exception) when (exception.Status == 404) { return new AdminRegistrationMutationResponse("not_found", "Die Anmeldung ist nicht mehr vorhanden."); }
+        catch (RequestFailedException exception) when (exception.Status == 412) { return new AdminRegistrationMutationResponse("conflict", "Die Anmeldung wurde zwischenzeitlich geändert."); }
+    }
+    public async Task<AdminOperationResponse> AnonymizeAllAsync(CancellationToken cancellationToken)
+    {
+        await _tableClient.CreateIfNotExistsAsync(cancellationToken);
+        var affected = 0;
+        await foreach (var entity in QueryRegistrationsAsync(cancellationToken))
+        {
+            if (entity.AnonymizedAtUtc.HasValue) continue;
+            var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(8)).ToLowerInvariant();
+            var anonymized = new RegistrationEntity
+            {
+                PartitionKey = PartitionKey,
+                RowKey = $"anonymized-{token}",
+                RegistrationType = entity.RegistrationType,
+                Name = $"Anonymisiert {token[..8].ToUpperInvariant()}",
+                GroupName = entity.RegistrationType == "group" ? $"Anonymisierte Gruppe {token[..8].ToUpperInvariant()}" : null,
+                Email = $"{token}@anonymisiert.invalid",
+                Origin = "Anonymisiert",
+                NormalizedOrigin = "anonymisiert",
+                PersonCount = entity.PersonCount,
+                Message = null,
+                CreatedAtUtc = entity.CreatedAtUtc,
+                RespondedAtUtc = null,
+                AnonymizedAtUtc = _timeProvider.GetUtcNow()
+            };
+            // Der alte, aus Kontaktdaten abgeleitete Dublettenschlüssel wird atomar entfernt.
+            // Damit bleiben weder Klartextdaten noch ein berechenbarer Personenbezug erhalten.
+            await _tableClient.SubmitTransactionAsync(
+            [
+                new TableTransactionAction(TableTransactionActionType.Delete, entity, entity.ETag),
+                new TableTransactionAction(TableTransactionActionType.Add, anonymized)
+            ], cancellationToken);
+            affected++;
+        }
+        return new AdminOperationResponse("anonymized", $"{affected} Anmeldungen wurden anonymisiert.", affected);
+    }
+
     public async Task<AdminRegistrationDeleteResult> DeleteAdminRegistrationAsync(
         string id,
         string version,
@@ -251,7 +304,9 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
             entity.Origin,
             entity.PersonCount,
             entity.Message,
-            entity.CreatedAtUtc);
+            entity.CreatedAtUtc,
+            entity.RespondedAtUtc,
+            entity.AnonymizedAtUtc);
 
     private static string Normalize(string value) =>
         string.Join(' ', value.Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));

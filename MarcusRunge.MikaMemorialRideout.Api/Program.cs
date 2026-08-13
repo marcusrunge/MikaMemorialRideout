@@ -9,6 +9,7 @@ builder.ConfigureFunctionsWebApplication();
 
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IRegistrationRepository, TableRegistrationRepository>();
+builder.Services.AddSingleton<IRegistrationStateRepository, TableRegistrationStateRepository>();
 builder.Services.AddSingleton<IPlanningStatusRepository, TablePlanningStatusRepository>();
 builder.Services.AddSingleton<IAdminCodeVerifier, AdminCodeVerifier>();
 

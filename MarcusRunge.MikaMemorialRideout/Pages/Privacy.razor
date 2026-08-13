@@ -1,4 +1,5 @@
 @page "/datenschutz"
+@inject IJSRuntime Js
 
 <PageTitle>Datenschutz | Mika Memorial Rideout</PageTitle>
 
@@ -18,7 +19,7 @@
                 29525 Uelzen<br />
                 Deutschland<br /><br />
                 Telefon: <a href="tel:+4958190776904">0581 90776904</a><br />
-                E-Mail: <a href="mailto:mr.software@outlook.de">mr.software@outlook.de</a>
+                E-Mail: <button type="button" class="legal-page__email-button" title="E-Mail-Programm öffnen" @onclick="OpenEmailClientAsync"><span>@EmailLocalPart</span><span aria-hidden="true">@@</span><span>@EmailDomainPart</span></button>
             </address>
         </section>
 
@@ -70,7 +71,9 @@
 
         <section aria-labelledby="privacy-retention-heading">
             <h2 id="privacy-retention-heading">7. Speicherdauer</h2>
-            <p>Personenbezogene Anmeldedaten werden nur so lange gespeichert, wie sie für die Organisation und Durchführung des Mika Memorial Rideouts benötigt werden. Sie werden spätestens 30 Tage nach Abschluss des Rideouts gelöscht, sofern keine gesetzlichen Aufbewahrungspflichten oder die Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen eine längere Speicherung erfordern.</p>
+            <p>Personenbezogene Anmeldedaten werden nur so lange gespeichert, wie sie für die Organisation und Durchführung des Mika Memorial Rideouts benötigt werden. Sie werden spätestens 30 Tage nach Abschluss des Rideouts gelöscht oder irreversibel anonymisiert, sofern keine gesetzlichen Aufbewahrungspflichten oder die Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen eine längere Speicherung erfordern.</p>
+            <p>Bei der Anonymisierung werden Namen, E-Mail-Adressen, Herkunftsangaben, Gruppennamen, Nachrichten und sonstige personenbezogene Freitextangaben entfernt oder durch zufällige, nicht aus den ursprünglichen Daten ableitbare Platzhalter ersetzt. Nicht personenbezogene Angaben wie Anmeldeart, Personenanzahl und Anmeldezeitpunkt können für den Rückblick erhalten bleiben.</p>
+            <p>Vor der Anonymisierung können die gespeicherten E-Mail-Adressen für notwendige organisatorische Mitteilungen zum Rideout verwendet werden. Empfänger einer Rundnachricht werden ausschließlich als Blindkopie angesprochen. Nach der Anonymisierung ist eine Kontaktaufnahme anhand der gespeicherten Anmeldedaten nicht mehr möglich. Die Website kann anschließend als Informations- und Erinnerungsseite fortgeführt werden.</p>
         </section>
 
         <section aria-labelledby="privacy-recipients-heading">
@@ -87,7 +90,7 @@
         <section aria-labelledby="privacy-rights-heading">
             <h2 id="privacy-rights-heading">10. Rechte betroffener Personen</h2>
             <p>Betroffene Personen haben nach Maßgabe der gesetzlichen Voraussetzungen insbesondere das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerruf einer erteilten Einwilligung.</p>
-            <p>Zur Ausübung der Rechte genügt eine Nachricht an <a href="mailto:mr.software@outlook.de">mr.software@outlook.de</a>.</p>
+            <p>Zur Ausübung der Rechte genügt eine Nachricht an <button type="button" class="legal-page__email-button" title="E-Mail-Programm öffnen" @onclick="OpenEmailClientAsync"><span>@EmailLocalPart</span><span aria-hidden="true">@@</span><span>@EmailDomainPart</span></button>.</p>
             <p>Außerdem besteht das Recht, sich bei einer Datenschutzaufsichtsbehörde zu beschweren. Zuständig ist insbesondere:</p>
             <address>
                 Die Landesbeauftragte für den Datenschutz Niedersachsen<br />
@@ -104,7 +107,19 @@
 
         <section aria-labelledby="privacy-version-heading">
             <h2 id="privacy-version-heading">12. Stand</h2>
-            <p>Stand dieser Datenschutzerklärung: 11. August 2026.</p>
+            <p>Stand dieser Datenschutzerklärung: 13. August 2026.</p>
         </section>
     </div>
 </main>
+
+@code {
+    private const string EmailLocalPart = "mr.software";
+    private const string EmailDomainPart = "outlook.de";
+    private static string EmailAddress => $"{EmailLocalPart}@{EmailDomainPart}";
+
+    private async Task OpenEmailClientAsync()
+    {
+        // Wie im Impressum wird die Adresse erst beim Klick zusammengesetzt und nicht als statischer mailto-Link ausgeliefert.
+        await Js.InvokeVoidAsync("open", $"mailto:{EmailAddress}", "_self");
+    }
+}

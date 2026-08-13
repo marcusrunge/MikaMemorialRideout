@@ -15,15 +15,18 @@ internal sealed class AdminRegistrationFunctions
     private readonly IAdminCodeVerifier _adminCodeVerifier;
     private readonly ILogger<AdminRegistrationFunctions> _logger;
     private readonly IRegistrationRepository _repository;
+    private readonly IRegistrationStateRepository _stateRepository;
 
     public AdminRegistrationFunctions(
         IAdminCodeVerifier adminCodeVerifier,
         ILogger<AdminRegistrationFunctions> logger,
-        IRegistrationRepository repository)
+        IRegistrationRepository repository,
+        IRegistrationStateRepository stateRepository)
     {
         _adminCodeVerifier = adminCodeVerifier;
         _logger = logger;
         _repository = repository;
+        _stateRepository = stateRepository;
     }
 
     [Function("VerifyAdminCode")]
@@ -117,6 +120,25 @@ internal sealed class AdminRegistrationFunctions
             : new ConflictObjectResult(new AdminRegistrationMutationResponse("conflict", "Die Anmeldung wurde zwischenzeitlich geändert. Bitte lade die Liste neu."));
     }
 
+    [Function("SetRegistrationResponded")]
+    public async Task<IActionResult> SetRespondedAsync([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "rideout-management/registrations/{id}/response-state")] HttpRequest request, string id, CancellationToken cancellationToken)
+    {
+        if (!IsAuthorized(request)) return Unauthorized();
+        var input = await request.ReadFromJsonAsync<AdminResponseStateRequest>(cancellationToken);
+        if (input is null || string.IsNullOrWhiteSpace(input.Version)) return Invalid("Die Versionsangabe fehlt.");
+        var result = await _repository.SetRespondedAsync(id, input.Version, input.IsResponded, cancellationToken);
+        return result.Status == "updated" ? new OkObjectResult(result) : new ConflictObjectResult(result);
+    }
+    [Function("AnonymizeRegistrations")]
+    public async Task<IActionResult> AnonymizeAsync([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "rideout-management/registrations/anonymize")] HttpRequest request, CancellationToken cancellationToken)
+    {
+        if (!IsAuthorized(request)) return Unauthorized();
+        var state = await _stateRepository.GetAsync(cancellationToken);
+        if (state.IsRegistrationOpen) return Invalid("Die Anmeldung muss vor der Anonymisierung geschlossen werden.");
+        var result = await _repository.AnonymizeAllAsync(cancellationToken);
+        _logger.LogWarning("All remaining registration data was anonymized. Affected records: {AffectedCount}.", result.AffectedCount);
+        return new OkObjectResult(result);
+    }
     private bool IsAuthorized(HttpRequest request) =>
         _adminCodeVerifier.IsValid(request.Headers[AdminCodeHeader].FirstOrDefault());
 

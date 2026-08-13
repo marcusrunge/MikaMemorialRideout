@@ -1,0 +1,2 @@
+namespace MarcusRunge.MikaMemorialRideout.Contracts;
+public sealed record UpdateRegistrationStateRequest(bool IsRegistrationOpen);
