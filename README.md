@@ -50,7 +50,7 @@ The complete application is built with **.NET 10**.
 
 ### Backend
 
-- .NET 10
+- .NET 8
 - Azure Functions
 - HTTP-triggered API endpoints
 - Asynchronous request processing
@@ -97,22 +97,25 @@ C:.
 │   │   MarcusRunge.MikaMemorialRideout.csproj.user
 │   │   Program.cs
 │   │   _Imports.razor
-│   │   
+│   │
 │   ├───Components
 │   │   │   PublicFooter.razor
 │   │   │   PublicFooter.razor.css
 │   │   │   PublicNavigation.razor
 │   │   │   PublicNavigation.razor.css
-│   │   │ 
+│   │   │
 │   │   └───Registration
-│   │       GroupRegistrationForm.razor
-│   │       IndividualRegistrationForm.razor
+│   │           GroupRegistrationForm.razor
+│   │           IndividualRegistrationForm.razor
+│   │
 │   ├───Contracts
+│   │       AdminOperationResponse.cs
 │   │       AdminRegistrationEditorItem.cs
 │   │       AdminRegistrationMutationResponse.cs
 │   │       AdminRegistrationResponse.cs
 │   │       AdminRegistrationsResponse.cs
 │   │       AdminRegistrationUpdateRequest.cs
+│   │       AdminResponseStateRequest.cs
 │   │       AdminVerificationResponse.cs
 │   │       CreateRegistrationRequest.cs
 │   │       CreateRegistrationResponse.cs
@@ -123,23 +126,27 @@ C:.
 │   │       PlanningStatusLevel.cs
 │   │       PlanningStatusResponse.cs
 │   │       PublicSummaryResponse.cs
+│   │       RegistrationStateResponse.cs
 │   │       UpdatePlanningStatusRequest.cs
 │   │       UpdatePlanningStatusResponse.cs
+│   │       UpdateRegistrationStateRequest.cs
 │   │
 │   ├───Layout
 │   │       AdminLayout.razor
 │   │       MainLayout.razor
-│   │   
+│   │
 │   ├───Pages
 │   │       Admin.razor
 │   │       CurrentInformation.razor
 │   │       Home.razor
 │   │       Imprint.razor
+│   │       Imprint.razor.css
 │   │       Mika.razor
 │   │       Mika.razor.css
 │   │       NotFound.razor
 │   │       Organisation.razor
 │   │       Organisation.razor.css
+│   │       ParticipationTerms.razor
 │   │       Privacy.razor
 │   │       Route.razor
 │   │       Route.razor.css
@@ -194,12 +201,14 @@ C:.
     │   local.settings.json
     │   MarcusRunge.MikaMemorialRideout.Api.csproj
     │   Program.cs
-    │    
+    │
     ├───Contracts
+    │       AdminOperationResponse.cs
     │       AdminRegistrationMutationResponse.cs
     │       AdminRegistrationResponse.cs
     │       AdminRegistrationsResponse.cs
     │       AdminRegistrationUpdateRequest.cs
+    │       AdminResponseStateRequest.cs
     │       AdminVerificationResponse.cs
     │       CreateRegistrationRequest.cs
     │       CreateRegistrationResponse.cs
@@ -208,16 +217,19 @@ C:.
     │       PlanningStatusResponse.cs
     │       PlanningStatusValidation.cs
     │       PublicSummaryResponse.cs
+    │       RegistrationStateResponse.cs
     │       RegistrationValidation.cs
     │       UpdatePlanningStatusRequest.cs
     │       UpdatePlanningStatusResponse.cs
+    │       UpdateRegistrationStateRequest.cs
     │
     ├───Functions
     │       AdminRegistrationFunctions.cs
     │       PlanningStatusFunctions.cs
     │       PublicSummaryFunctions.cs
     │       RegistrationFunctions.cs
-    |
+    │       RegistrationStateFunctions.cs
+    │
     ├───Properties
     │       launchSettings.json
     │       serviceDependencies.json
@@ -233,10 +245,13 @@ C:.
             AdminRegistrationUpdateResult.cs
             IPlanningStatusRepository.cs
             IRegistrationRepository.cs
+            IRegistrationStateRepository.cs
             PlanningStatusCatalog.cs
             PlanningStatusDefinition.cs
             PlanningStatusEntity.cs
             RegistrationCreateResult.cs
             RegistrationEntity.cs
+            RegistrationStateEntity.cs
             TablePlanningStatusRepository.cs
             TableRegistrationRepository.cs
+            TableRegistrationStateRepository.cs
