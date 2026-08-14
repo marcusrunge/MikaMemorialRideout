@@ -10,5 +10,6 @@ public sealed class CreateRegistrationRequest
     public int PersonCount { get; set; } = 1;
     public string? Message { get; set; }
     public bool PrivacyAccepted { get; set; }
+    public bool ParticipationTermsAccepted { get; set; }
     public string? Website { get; set; }
 }

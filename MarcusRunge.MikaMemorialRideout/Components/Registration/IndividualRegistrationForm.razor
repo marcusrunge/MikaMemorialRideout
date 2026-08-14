@@ -46,7 +46,11 @@
         <label for="individual-privacy">Ich habe die <a href="datenschutz" target="_blank">Datenschutzerklärung</a> gelesen und willige in die Verarbeitung meiner Angaben zur Organisation des Rideouts ein.</label>
     </div>
     <ValidationMessage For="() => _input.PrivacyAccepted" />
-
+    <div class="form-checkbox">
+        <InputCheckbox id="individual-participation-terms" @bind-Value="_input.ParticipationTermsAccepted" />
+        <label for="individual-participation-terms">Ich habe die <a href="teilnahmebedingungen" target="_blank">Teilnahme- und Sicherheitshinweise</a> gelesen. Mir ist bekannt, dass die StVO uneingeschränkt gilt und ich für meine Fahrweise, meine Fahrtüchtigkeit sowie den verkehrssicheren Zustand meines Fahrzeugs selbst verantwortlich bin.</label>
+    </div>
+    <ValidationMessage For="() => _input.ParticipationTermsAccepted" />
     <button class="secondary-button" type="submit" disabled="@_isSubmitting">
         @(_isSubmitting ? "Anmeldung wird gespeichert" : "Verbindlich anmelden")
     </button>
@@ -84,6 +88,7 @@
                 PersonCount = _input.PersonCount,
                 Message = _input.Message,
                 PrivacyAccepted = _input.PrivacyAccepted,
+                ParticipationTermsAccepted = _input.ParticipationTermsAccepted,
                 Website = _input.Website
             };
 

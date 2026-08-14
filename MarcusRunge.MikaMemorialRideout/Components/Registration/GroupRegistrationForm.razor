@@ -52,7 +52,11 @@
         <label for="group-privacy">Ich habe die <a href="datenschutz" target="_blank">Datenschutzerklärung</a> gelesen und willige in die Verarbeitung der Angaben zur Organisation des Rideouts ein.</label>
     </div>
     <ValidationMessage For="() => _input.PrivacyAccepted" />
-
+    <div class="form-checkbox">
+        <InputCheckbox id="group-participation-terms" @bind-Value="_input.ParticipationTermsAccepted" />
+        <label for="group-participation-terms">Ich habe die <a href="teilnahmebedingungen" target="_blank">Teilnahme- und Sicherheitshinweise</a> gelesen und werde alle von mir angemeldeten Personen darüber informieren. Mir ist bekannt, dass die StVO uneingeschränkt gilt und jede teilnehmende Person eigenverantwortlich fährt.</label>
+    </div>
+    <ValidationMessage For="() => _input.ParticipationTermsAccepted" />
     <button class="secondary-button" type="submit" disabled="@_isSubmitting">
         @(_isSubmitting ? "Anmeldung wird gespeichert" : "Gruppe verbindlich anmelden")
     </button>
@@ -91,6 +95,7 @@
                 PersonCount = _input.PersonCount,
                 Message = _input.Message,
                 PrivacyAccepted = _input.PrivacyAccepted,
+                ParticipationTermsAccepted = _input.ParticipationTermsAccepted,
                 Website = _input.Website
             };
 

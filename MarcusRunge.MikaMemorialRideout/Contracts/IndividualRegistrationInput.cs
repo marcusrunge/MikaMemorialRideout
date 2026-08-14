@@ -25,6 +25,8 @@ public sealed class IndividualRegistrationInput
 
     [Range(typeof(bool), "true", "true", ErrorMessage = "Bitte akzeptiere die Datenschutzhinweise.")]
     public bool PrivacyAccepted { get; set; }
+    [Range(typeof(bool), "true", "true", ErrorMessage = "Bitte akzeptiere die Teilnahme- und Sicherheitshinweise.")]
+    public bool ParticipationTermsAccepted { get; set; }
 
     public string? Website { get; set; }
 }

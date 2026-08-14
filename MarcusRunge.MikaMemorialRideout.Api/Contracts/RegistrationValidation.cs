@@ -32,7 +32,8 @@ internal static class RegistrationValidation
 
         if (!request.PrivacyAccepted)
             errors[nameof(request.PrivacyAccepted)] = ["Die Datenschutzhinweise müssen akzeptiert werden."];
-
+        if (!request.ParticipationTermsAccepted)
+            errors[nameof(request.ParticipationTermsAccepted)] = ["Die Teilnahme- und Sicherheitshinweise müssen akzeptiert werden."];
         return errors;
     }
 

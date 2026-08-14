@@ -163,6 +163,7 @@ internal sealed class AdminRegistrationFunctions
             PersonCount = request.PersonCount,
             Message = request.Message,
             PrivacyAccepted = true,
+            ParticipationTermsAccepted = true,
             Website = string.Empty
         };
 

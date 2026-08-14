@@ -771,3 +771,12 @@ h3 { margin-bottom: 0.65rem; font-size: 1.2rem; line-height: 1.3; }
 /* Response state in the registration list */
 .registration-response-badge { display: inline-flex; width: fit-content; align-items: center; margin-top: .35rem; padding: .18rem .48rem; border-radius: 999px; background: #dcfce7; color: #14532d; font-size: .7rem; font-weight: 800; line-height: 1.35; }
 .registration-response-badge--open { background: #ffedd5; color: #9a3412; }
+
+/* Participation terms */
+.participation-legal-review { display: grid; margin-bottom: 2rem; padding: 1rem 1.15rem; border: 1px solid #fdba74; border-left: .35rem solid var(--color-primary); border-radius: .75rem; background: #fff7ed; gap: .2rem; }
+.participation-legal-review p { margin: 0; color: var(--color-text-muted); }
+
+/* Registration confirmations in the administrative list */
+.registration-consent-tags { display: flex; flex-wrap: wrap; margin-top: .4rem; gap: .3rem; }
+.registration-consent-tag { display: inline-flex; width: fit-content; align-items: center; padding: .18rem .48rem; border-radius: 999px; background: #dbeafe; color: #1e3a8a; font-size: .68rem; font-weight: 800; line-height: 1.35; }
+.registration-consent-tag--legacy { background: #e2e8f0; color: #475569; }

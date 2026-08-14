@@ -34,6 +34,8 @@ public sealed class AdminRegistrationEditorItem
     public DateTimeOffset CreatedAtUtc { get; set; }
     public DateTimeOffset? RespondedAtUtc { get; set; }
     public DateTimeOffset? AnonymizedAtUtc { get; set; }
+    public bool ParticipationTermsAccepted { get; set; }
+    public DateTimeOffset? ParticipationTermsAcceptedAtUtc { get; set; }
     public bool IsSaving { get; set; }
     public bool IsDeleting { get; set; }
     public bool DeleteConfirmationVisible { get; set; }
@@ -54,7 +56,9 @@ public sealed class AdminRegistrationEditorItem
         Message = response.Message,
         CreatedAtUtc = response.CreatedAtUtc,
         RespondedAtUtc = response.RespondedAtUtc,
-        AnonymizedAtUtc = response.AnonymizedAtUtc
+        AnonymizedAtUtc = response.AnonymizedAtUtc,
+        ParticipationTermsAccepted = response.ParticipationTermsAccepted,
+        ParticipationTermsAcceptedAtUtc = response.ParticipationTermsAcceptedAtUtc
     };
 
     public void Apply(AdminRegistrationResponse response)
@@ -71,5 +75,7 @@ public sealed class AdminRegistrationEditorItem
         CreatedAtUtc = response.CreatedAtUtc;
         RespondedAtUtc = response.RespondedAtUtc;
         AnonymizedAtUtc = response.AnonymizedAtUtc;
+        ParticipationTermsAccepted = response.ParticipationTermsAccepted;
+        ParticipationTermsAcceptedAtUtc = response.ParticipationTermsAcceptedAtUtc;
     }
 }

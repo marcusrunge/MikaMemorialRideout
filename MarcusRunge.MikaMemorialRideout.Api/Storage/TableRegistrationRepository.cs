@@ -123,6 +123,11 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
             return new AdminRegistrationUpdateResult(AdminRegistrationUpdateStatus.Conflict);
 
         var updated = CreateEntity(request, current.CreatedAtUtc);
+        // Die Adminbearbeitung verändert keine historische Bestätigung und fordert sie für Altbestände nicht nachträglich an.
+        updated.ParticipationTermsAccepted = current.ParticipationTermsAccepted;
+        updated.ParticipationTermsAcceptedAtUtc = current.ParticipationTermsAcceptedAtUtc;
+        updated.RespondedAtUtc = current.RespondedAtUtc;
+        updated.AnonymizedAtUtc = current.AnonymizedAtUtc;
 
         try
         {
@@ -199,6 +204,8 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
                 PersonCount = entity.PersonCount,
                 Message = null,
                 CreatedAtUtc = entity.CreatedAtUtc,
+                ParticipationTermsAccepted = entity.ParticipationTermsAccepted,
+                ParticipationTermsAcceptedAtUtc = entity.ParticipationTermsAcceptedAtUtc,
                 RespondedAtUtc = null,
                 AnonymizedAtUtc = _timeProvider.GetUtcNow()
             };
@@ -248,7 +255,9 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
             request.Origin,
             request.PersonCount,
             request.Message,
-            createdAtUtc);
+            createdAtUtc,
+            request.ParticipationTermsAccepted,
+            request.ParticipationTermsAccepted ? createdAtUtc : null);
 
     private static RegistrationEntity CreateEntity(AdminRegistrationUpdateRequest request, DateTimeOffset createdAtUtc) =>
         CreateEntity(
@@ -259,7 +268,9 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
             request.Origin,
             request.PersonCount,
             request.Message,
-            createdAtUtc);
+            createdAtUtc,
+            false,
+            null);
 
     private static RegistrationEntity CreateEntity(
         string registrationTypeValue,
@@ -269,7 +280,9 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
         string originValue,
         int personCount,
         string? messageValue,
-        DateTimeOffset createdAtUtc)
+        DateTimeOffset createdAtUtc,
+        bool participationTermsAccepted,
+        DateTimeOffset? participationTermsAcceptedAtUtc)
     {
         var registrationType = Normalize(registrationTypeValue);
         var name = nameValue.Trim();
@@ -289,7 +302,9 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
             NormalizedOrigin = Normalize(originValue),
             PersonCount = personCount,
             Message = string.IsNullOrWhiteSpace(messageValue) ? null : messageValue.Trim(),
-            CreatedAtUtc = createdAtUtc
+            CreatedAtUtc = createdAtUtc,
+            ParticipationTermsAccepted = participationTermsAccepted,
+            ParticipationTermsAcceptedAtUtc = participationTermsAcceptedAtUtc
         };
     }
 
@@ -306,7 +321,9 @@ internal sealed class TableRegistrationRepository : IRegistrationRepository
             entity.Message,
             entity.CreatedAtUtc,
             entity.RespondedAtUtc,
-            entity.AnonymizedAtUtc);
+            entity.AnonymizedAtUtc,
+            entity.ParticipationTermsAccepted,
+            entity.ParticipationTermsAcceptedAtUtc);
 
     private static string Normalize(string value) =>
         string.Join(' ', value.Trim().ToLowerInvariant().Split(' ', StringSplitOptions.RemoveEmptyEntries));

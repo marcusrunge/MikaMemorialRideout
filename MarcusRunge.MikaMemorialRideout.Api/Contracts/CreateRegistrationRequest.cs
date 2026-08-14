@@ -17,6 +17,7 @@ public sealed class CreateRegistrationRequest
     public string? Message { get; set; }
 
     public bool PrivacyAccepted { get; set; }
+    public bool ParticipationTermsAccepted { get; set; }
 
     // Bots tend to fill hidden fields. Real users never see or populate this value.
     public string? Website { get; set; }
